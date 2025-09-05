@@ -112,7 +112,7 @@ export default function HomePage() {
 
               <Card className="text-center card-hover glassmorphism rounded-xl border-0">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-secondary/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Calendar className="w-6 h-6 text-primary" />
                   </div>
                   <CardTitle className="text-primary">Book Counselor</CardTitle>

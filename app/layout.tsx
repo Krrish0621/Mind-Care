@@ -7,7 +7,7 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "MindCare - Mental Health Support Platform",
   description: "Your trusted digital mental health support platform with AI chat, counselor booking, and peer support.",
-    generator: 'v0.app'
+    generator: 'Node.js'
 }
 
 export default function RootLayout({

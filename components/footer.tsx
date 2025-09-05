@@ -99,7 +99,7 @@ export function Footer() {
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-2 flex items-center justify-center space-x-2">
               <span>Built with care</span>
-              <Heart className="w-4 h-4 text-secondary fill-current" />
+             <Heart className="w-4 h-4 text-red-500 fill-current" />
               <span>for your well-being</span>
             </p>
             <p className="text-xs text-muted-foreground">

@@ -63,7 +63,7 @@ export default function ChatPage() {
     {
       text: "I'm overwhelmed",
       icon: Heart,
-      color: "bg-secondary/10 text-secondary hover:bg-secondary hover:text-white",
+      color: "bg-accent/10 text-accent hover:bg-accent hover:text-white",
     },
   ]
 
