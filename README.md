@@ -36,3 +36,23 @@ It offers AI-powered first-aid mental support, anonymous peer forums, counselor 
 - `scripts/` – Seeder or automation scripts
 - `styles/` – Global and Tailwind CSS
 - `package.json` – Project dependencies and scripts
+
+## How to Run This Project Locally
+
+Follow these steps to get the app running on your local machine:
+
+ 1. Clone the repository
+git clone https://github.com/your-username/Mind-Care.git
+cd Mind-Care
+
+ 2. Install dependencies
+npm install
+
+
+This will install all required packages listed in package.json.
+
+ 3. Run the development server
+npm run dev
+
+
+Visit http://localhost:3000 in your browser. You should see the MindCare homepage running locally.
