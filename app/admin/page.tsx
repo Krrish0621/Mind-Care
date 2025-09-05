@@ -167,20 +167,20 @@ export default function AdminPage() {
 
   const phq9ChartData = analyticsData
     ? [
-        { name: "Minimal", value: analyticsData.assessmentMetrics.phq9Results.minimal, color: "#3b82f6" },
-        { name: "Mild", value: analyticsData.assessmentMetrics.phq9Results.mild, color: "#6C63FF" },
-        { name: "Moderate", value: analyticsData.assessmentMetrics.phq9Results.moderate, color: "#FF6B6B" },
-        { name: "Severe", value: analyticsData.assessmentMetrics.phq9Results.severe, color: "#FF4444" },
-      ]
+      { name: "Minimal", value: analyticsData.assessmentMetrics.phq9Results.minimal, color: "#3b82f6" },
+      { name: "Mild", value: analyticsData.assessmentMetrics.phq9Results.mild, color: "#6C63FF" },
+      { name: "Moderate", value: analyticsData.assessmentMetrics.phq9Results.moderate, color: "#FF6B6B" },
+      { name: "Severe", value: analyticsData.assessmentMetrics.phq9Results.severe, color: "#FF4444" },
+    ]
     : []
 
   const gad7ChartData = analyticsData
     ? [
-        { name: "Minimal", value: analyticsData.assessmentMetrics.gad7Results.minimal, color: "#3b82f6" },
-        { name: "Mild", value: analyticsData.assessmentMetrics.gad7Results.mild, color: "#6C63FF" },
-        { name: "Moderate", value: analyticsData.assessmentMetrics.gad7Results.moderate, color: "#FF6B6B" },
-        { name: "Severe", value: analyticsData.assessmentMetrics.gad7Results.severe, color: "#FF4444" },
-      ]
+      { name: "Minimal", value: analyticsData.assessmentMetrics.gad7Results.minimal, color: "#3b82f6" },
+      { name: "Mild", value: analyticsData.assessmentMetrics.gad7Results.mild, color: "#6C63FF" },
+      { name: "Moderate", value: analyticsData.assessmentMetrics.gad7Results.moderate, color: "#FF6B6B" },
+      { name: "Severe", value: analyticsData.assessmentMetrics.gad7Results.severe, color: "#FF4444" },
+    ]
     : []
 
   const getStatusColor = (status: string) => {
@@ -271,14 +271,14 @@ export default function AdminPage() {
               <div className="text-2xl font-bold">{analyticsData?.userMetrics.totalUsers.toLocaleString() || "0"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${analyticsData?.userMetrics.userGrowth >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`flex items-center ${(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? "text-blue-600" : "text-red-600"}`}
                 >
-                  {analyticsData?.userMetrics.userGrowth >= 0 ? (
+                  {(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  {analyticsData?.userMetrics.userGrowth >= 0 ? "+" : ""}
+                  {(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? "+" : ""}
                   {analyticsData?.userMetrics.userGrowth.toFixed(1)}%
                 </span>
                 from last month
@@ -292,8 +292,9 @@ export default function AdminPage() {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{analyticsData?.userMetrics.activeUsers.toLocaleString() || "10"}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">
+                {(analyticsData?.userMetrics.activeUsers ?? 100).toLocaleString()}
+              </div>              <p className="text-xs text-muted-foreground">
                 <span className="text-blue-600 flex items-center">
                   <TrendingUp className="w-3 h-3 mr-1" />
                   +8.2%
@@ -312,15 +313,16 @@ export default function AdminPage() {
               <div className="text-2xl font-bold">{analyticsData?.bookingMetrics.totalBookings || "12"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${analyticsData?.bookingMetrics.bookingGrowth >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`flex items-center ${(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? "text-blue-600" : "text-red-600"
+                    }`}
                 >
-                  {analyticsData?.bookingMetrics.bookingGrowth >= 0 ? (
+                  {(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  {analyticsData?.bookingMetrics.bookingGrowth >= 0 ? "+" : ""}
-                  {analyticsData?.bookingMetrics.bookingGrowth.toFixed(1)}%
+                  {(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? "+" : ""}
+                  {(analyticsData?.bookingMetrics?.bookingGrowth ?? 0).toFixed(1)}%
                 </span>
                 this month
               </p>
@@ -336,14 +338,14 @@ export default function AdminPage() {
               <div className="text-2xl font-bold">{analyticsData?.forumMetrics.totalPosts.toLocaleString() || "80"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${analyticsData?.forumMetrics.postGrowth >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`flex items-center ${analyticsData?.forumMetrics?.postGrowth ?? 0 >= 0 ? "text-blue-600" : "text-red-600"}`}
                 >
-                  {analyticsData?.forumMetrics.postGrowth >= 0 ? (
+                  {(analyticsData?.forumMetrics?.postGrowth ?? 0) >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  {analyticsData?.forumMetrics.postGrowth >= 0 ? "+" : ""}
+                  {(analyticsData?.forumMetrics?.postGrowth ?? 0) >= 0 ? "+" : ""}
                   {analyticsData?.forumMetrics.postGrowth.toFixed(1)}%
                 </span>
                 from last week
