@@ -1,30 +1,49 @@
-# Mental health platform UI
+# 🧠 MindCare
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+**MindCare** is a modern, full-stack mental health support platform tailored for college students.  
+It offers AI-powered first-aid mental support, anonymous peer forums, counselor booking, and real-time analytics for institutions.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/krrishu62005-8232s-projects/v0-mental-health-platform-ui)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/gj8zXy2hnWI)
+---
 
-## Overview
+## 🚀 Features
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- 🧠 **AI Chatbot Support** — provides emotional first aid and mental wellness guidance
+- 📅 **Confidential Counselor Booking** — schedule sessions with campus or external professionals
+- 🎧 **Wellness Resource Hub** — curated audio, video, and PDFs in multiple languages
+- 💬 **Peer Forum** — anonymous, moderated discussion board powered by student volunteers
+- 📊 **Admin Dashboard** — track trends via anonymized student mental health data
 
-## Deployment
+---
 
-Your project is live at:
+## 🛠 Tech Stack
 
-**[https://vercel.com/krrishu62005-8232s-projects/v0-mental-health-platform-ui](https://vercel.com/krrishu62005-8232s-projects/v0-mental-health-platform-ui)**
+| Layer         | Tech                                  |
+|---------------|---------------------------------------|
+| Frontend      | Next.js 14 (App Router), TypeScript   |
+| Styling       | Tailwind CSS, Radix UI, ShadCN        |
+| Backend/API   | Next.js API Routes                    |
+| Database      | In-memory (mock data) or MongoDB (configurable) |
+| Auth (optional) | Auth.js      |
 
-## Build your app
 
-Continue building your app on:
-
-**[https://v0.app/chat/projects/gj8zXy2hnWI](https://v0.app/chat/projects/gj8zXy2hnWI)**
-
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+MindCare/
+├── app/                  # App Router pages (Next.js 14)
+│   ├── api/              # API routes (analytics, reports, etc.)
+│   └── ...               # Page components (e.g., home, chat, book)
+├── components/           # Reusable UI components
+├── hooks/                # Custom React hooks
+├── lib/                  # Data store, utilities, mock DB
+├── public/               # Static assets (images, icons)
+├── scripts/              # Seeder and helper scripts
+├── styles/               # Tailwind, global CSS
+├── node_modules/         # Auto-generated dependencies
+├── .gitignore            # Git ignored files
+├── components.json       # ShadCN UI config
+├── next-env.d.ts         # TypeScript Next.js types
+├── next.config.mjs       # Next.js config
+├── package.json          # App metadata and scripts
+├── package-lock.json     # Dependency lockfile
+├── pnpm-lock.yaml        # Optional if using pnpm
+├── postcss.config.mjs    # Tailwind/PostCSS config
+├── README.md             # Project readme
+└── tsconfig.json         # TypeScript config
