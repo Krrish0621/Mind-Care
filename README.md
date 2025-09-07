@@ -56,3 +56,8 @@ npm run dev
 
 
 Visit http://localhost:3000 in your browser. You should see the MindCare homepage running locally.
+
+## ▶️ Live Demo
+
+Try the live demo:  
+[![Open Live Demo](https://img.shields.io/badge/Open%20Live%20Demo-Visit-blue?logo=vercel&style=for-the-badge)](https://sih-mindcare.vercel.app/)
