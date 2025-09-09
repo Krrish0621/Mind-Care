@@ -11,13 +11,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
-import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2 } from "lucide-react"
+import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2, Calendar } from "lucide-react"
+import Link from "next/link"
 
 interface Message {
   id: string
   content: string
   sender: "user" | "bot"
   timestamp: Date
+  type?: "text" | "buttons"
 }
 
 interface Assessment {
@@ -34,9 +36,10 @@ export default function ChatPage() {
     {
       id: "1",
       content:
-        "Hello! I'm here to support you today. How are you feeling right now? You can share what's on your mind or use one of the quick options below.",
+        "Hello! I'm here to support you today. How are you feeling right now? You can share what's on your mind or use one of the quick options below.\n\nWe also offer two quick and confidential mental health self-assessments:\n\n• **PHQ-9** – helps evaluate symptoms of depression.\n• **GAD-7** – helps assess anxiety levels.\n\nThese tools are designed to give you a better understanding of your emotional well-being. You can take either of them anytime by clicking the buttons below.",
       sender: "bot",
       timestamp: new Date(),
+      type: "text",
     },
   ])
   const [inputValue, setInputValue] = useState("")
@@ -102,6 +105,7 @@ export default function ChatPage() {
       content,
       sender: "user",
       timestamp: new Date(),
+      type: "text",
     }
 
     setMessages((prev) => [...prev, userMessage])
@@ -119,9 +123,7 @@ export default function ChatPage() {
         }),
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to get response")
-      }
+      if (!response.ok) throw new Error("Failed to get response")
 
       const data = await response.json()
 
@@ -130,23 +132,24 @@ export default function ChatPage() {
         content: data.response,
         sender: "bot",
         timestamp: new Date(data.timestamp),
+        type: "text",
       }
 
       setMessages((prev) => [...prev, botMessage])
     } catch (error) {
-      console.error("[v0] Chat API error:", error)
+      console.error("Chat API error:", error)
       toast({
         title: "Connection Error",
         description: "Unable to connect to the chat service. Please try again.",
         variant: "destructive",
       })
 
-      // Fallback to local response
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
         sender: "bot",
         timestamp: new Date(),
+        type: "text",
       }
       setMessages((prev) => [...prev, fallbackMessage])
     } finally {
@@ -173,9 +176,10 @@ export default function ChatPage() {
 
     const botMessage: Message = {
       id: Date.now().toString(),
-      content: `I'll guide you through the ${assessmentData.name}. This will help us better understand how you've been feeling. Please answer each question honestly - there are no right or wrong answers.`,
+      content: `I'll guide you through the ${assessmentData.name}. Please answer each question honestly - there are no right or wrong answers.`,
       sender: "bot",
       timestamp: new Date(),
+      type: "text",
     }
 
     setMessages((prev) => [...prev, botMessage])
@@ -194,15 +198,12 @@ export default function ChatPage() {
         responses: newResponses,
       })
     } else {
-      // Assessment complete - send to API
       setIsLoading(true)
 
       try {
         const response = await fetch("/api/assessments", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userToken,
             tool: assessment.id === "phq9" ? "PHQ-9" : "GAD-7",
@@ -210,57 +211,52 @@ export default function ChatPage() {
           }),
         })
 
-        if (!response.ok) {
-          throw new Error("Failed to save assessment")
-        }
+        if (!response.ok) throw new Error("Failed to save assessment")
 
         const data = await response.json()
 
         const botMessage: Message = {
           id: Date.now().toString(),
-          content: `${data.message} ${data.recommendations?.length > 0 ? "\n\nRecommendations:\n• " + data.recommendations.join("\n• ") : ""}\n\nRemember, this is just a screening tool and not a diagnosis. Would you like me to help you find resources or book an appointment with a counselor?`,
+          content: `${data.message}${data.recommendations?.length > 0 ? "\n\nRecommendations:\n• " + data.recommendations.join("\n• ") : ""
+            }\n\nRemember, this is just a screening tool and not a diagnosis.`,
           sender: "bot",
           timestamp: new Date(),
+          type: "text",
         }
 
         setMessages((prev) => [...prev, botMessage])
+
+        // If severity is mild/minimal → show buttons
+        // Show counselor/resources buttons based on score thresholds
+        const totalScore = newResponses.reduce((a, b) => a + b, 0)
+
+        const shouldShowButtons =
+          (assessment.id === "phq9" && totalScore > 4) ||
+          (assessment.id === "gad7" && totalScore > 3)
+
+        if (shouldShowButtons) {
+          const buttonMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: "",
+            sender: "bot",
+            timestamp: new Date(),
+            type: "buttons",
+          }
+          setMessages((prev) => [...prev, buttonMessage])
+        }
+
 
         toast({
           title: "Assessment Complete",
           description: `Your ${assessment.name} has been completed and saved securely.`,
         })
       } catch (error) {
-        console.error("[v0] Assessment API error:", error)
+        console.error("[Assessment API error]:", error)
         toast({
           title: "Save Error",
           description: "Assessment completed but couldn't be saved. Your responses are still valid.",
           variant: "destructive",
         })
-
-        // Fallback to local scoring
-        const totalScore = newResponses.reduce((sum, score) => sum + score, 0)
-        let interpretation = ""
-
-        if (assessment.id === "phq9") {
-          if (totalScore <= 4) interpretation = "minimal depression symptoms"
-          else if (totalScore <= 9) interpretation = "mild depression symptoms"
-          else if (totalScore <= 14) interpretation = "moderate depression symptoms"
-          else interpretation = "moderately severe to severe depression symptoms"
-        } else {
-          if (totalScore <= 4) interpretation = "minimal anxiety symptoms"
-          else if (totalScore <= 9) interpretation = "mild anxiety symptoms"
-          else if (totalScore <= 14) interpretation = "moderate anxiety symptoms"
-          else interpretation = "severe anxiety symptoms"
-        }
-
-        const botMessage: Message = {
-          id: Date.now().toString(),
-          content: `Thank you for completing the assessment. Based on your responses, the results suggest ${interpretation}. Remember, this is just a screening tool and not a diagnosis. I recommend discussing these results with a mental health professional. Would you like me to help you find resources or book an appointment with a counselor?`,
-          sender: "bot",
-          timestamp: new Date(),
-        }
-
-        setMessages((prev) => [...prev, botMessage])
       } finally {
         setIsLoading(false)
       }
@@ -307,7 +303,8 @@ export default function ChatPage() {
                     className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`flex items-start space-x-3 max-w-[80%] ${message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""}`}
+                      className={`flex items-start space-x-3 max-w-[80%] ${message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                        }`}
                     >
                       <Avatar className="w-10 h-10">
                         <AvatarFallback
@@ -321,19 +318,52 @@ export default function ChatPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div
-                        className={`rounded-2xl p-4 shadow-lg ${
-                          message.sender === "user"
+                        className={`rounded-2xl p-4 shadow-lg ${message.sender === "user"
                             ? "bg-gradient-to-br from-primary to-primary/90 text-white"
                             : "bg-white/80 backdrop-blur border border-white/20"
-                        }`}
-                      >
-                        <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
-                        <p
-                          className={`text-xs mt-2 ${
-                            message.sender === "user" ? "text-white/70" : "text-muted-foreground"
                           }`}
+                      >
+                        {/* ✅ Normal text */}
+                        {message.type === "text" && (
+                          <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
+                        )}
+
+                        {/* ✅ Buttons */}
+                        {message.type === "buttons" && (
+                          <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="lg"
+                              className="text-sm px-6 bg-white border-primary text-primary hover:bg-primary hover:text-white rounded-xl"
+                            >
+                              <Link href="/book">
+                                <Calendar className="w-4 h-4 mr-2" />
+                                Book a Counselor
+                              </Link>
+                            </Button>
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="lg"
+                              className="text-sm px-6 bg-white border-primary text-primary hover:bg-primary hover:text-white rounded-xl"
+                            >
+                              <Link href="/resources">
+                                <ClipboardList className="w-4 h-4 mr-2" />
+                                Explore Resources
+                              </Link>
+                            </Button>
+                          </div>
+                        )}
+
+                        <p
+                          className={`text-xs mt-2 ${message.sender === "user" ? "text-white/70" : "text-muted-foreground"
+                            }`}
                         >
-                          {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -358,6 +388,7 @@ export default function ChatPage() {
                   </div>
                 )}
 
+                {/* Assessment in-progress */}
                 {assessment && assessment.isActive && (
                   <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-2xl p-6 border border-white/20 shadow-lg backdrop-blur">
                     <div className="mb-4">
@@ -398,6 +429,7 @@ export default function ChatPage() {
               </div>
             </ScrollArea>
 
+            {/* Input box when not doing assessment */}
             {!assessment?.isActive && (
               <div className="p-6 border-t border-white/20 bg-white/20 backdrop-blur">
                 <div className="mb-6">
@@ -419,56 +451,51 @@ export default function ChatPage() {
                         </Button>
                       )
                     })}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startAssessment("phq9")}
-                      className="text-sm rounded-xl button-hover bg-white/50 border-white/30 hover:bg-primary hover:text-white"
-                      disabled={isLoading}
-                    >
-                      <ClipboardList className="w-4 h-4 mr-2" />
-                      PHQ-9 Assessment
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startAssessment("gad7")}
-                      className="text-sm rounded-xl button-hover bg-white/50 border-white/30 hover:bg-accent hover:text-white"
-                      disabled={isLoading}
-                    >
-                      <ClipboardList className="w-4 h-4 mr-2" />
-                      GAD-7 Assessment
-                    </Button>
                   </div>
                 </div>
 
-                <div className="flex space-x-3">
+                {/* Chat input */}
+                <div className="flex items-center space-x-3">
                   <Input
+                    type="text"
+                    placeholder="Type your message..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Share what's on your mind..."
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" && inputValue.trim() && !isLoading) {
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && inputValue.trim()) {
                         sendMessage(inputValue.trim())
                       }
                     }}
-                    className="flex-1 rounded-xl border-white/30 bg-white/50 backdrop-blur focus:bg-white/70 focus:border-primary"
+                    className="flex-1 rounded-xl bg-white/50 border-white/30 backdrop-blur"
                     disabled={isLoading}
                   />
                   <Button
-                    onClick={() => inputValue.trim() && sendMessage(inputValue.trim())}
-                    disabled={!inputValue.trim() || isLoading}
-                    size="sm"
-                    className="rounded-xl button-hover bg-primary hover:bg-primary/90 px-4"
+                    onClick={() => sendMessage(inputValue.trim())}
+                    disabled={isLoading || !inputValue.trim()}
+                    size="icon"
+                    className="rounded-xl"
                   >
-                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    <Send className="w-5 h-5" />
                   </Button>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-3 text-center leading-relaxed">
-                  This AI assistant provides support but is not a replacement for professional mental health care. All
-                  conversations are confidential and secure.
-                </p>
+                {/* Assessment buttons */}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button
+                    onClick={() => startAssessment("phq9")}
+                    variant="secondary"
+                    className="rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                  >
+                    Start PHQ-9
+                  </Button>
+                  <Button
+                    onClick={() => startAssessment("gad7")}
+                    variant="secondary"
+                    className="rounded-xl bg-accent/10 text-accent hover:bg-accent hover:text-white"
+                  >
+                    Start GAD-7
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
@@ -479,3 +506,4 @@ export default function ChatPage() {
     </div>
   )
 }
+

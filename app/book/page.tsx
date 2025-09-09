@@ -300,14 +300,24 @@ export default function BookPage() {
                           <Calendar
                             mode="single"
                             selected={selectedDate}
-                            onSelect={setSelectedDate}
+                            onSelect={(date) => {
+                              if (date) setSelectedDate(date)
+                            }}
                             disabled={(date) => {
-                              const dateStr = date.toISOString().split("T")[0]
-                              return !counselor.availability.some((a) => a.date === dateStr)
+                              if (!counselor?.availability) return true
+
+                              // Convert calendar date to local YYYY-MM-DD
+                              const dateStr = date.toLocaleDateString("en-CA") // gives YYYY-MM-DD in local time
+
+                              // Check if that date exists in availability
+                              return !counselor.availability.some(
+                                (a: { date: string }) => a.date === dateStr
+                              )
                             }}
                             className="rounded-md border"
                           />
                         </div>
+
 
                         {/* Time Selection */}
                         {selectedDate && (

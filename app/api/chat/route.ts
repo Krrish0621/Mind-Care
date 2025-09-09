@@ -5,6 +5,10 @@ export async function POST(req: NextRequest) {
   try {
     const { message } = await req.json()
 
+    if (!message || typeof message !== "string") {
+      return NextResponse.json({ error: "Invalid message format" }, { status: 400 })
+    }
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -14,10 +18,17 @@ export async function POST(req: NextRequest) {
         "X-Title": "MindCare App",
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
+        model: "openai/gpt-3.5-turbo", // You can replace with gpt-4 if needed
         messages: [
-          { role: "system", content: "You are a compassionate mental health assistant for students." },
-          { role: "user", content: message },
+          {
+            role: "system",
+            content:
+              "You are a compassionate AI assistant focused on mental health support for students. Respond empathetically, ask relevant follow-up questions, and keep messages concise but caring.",
+          },
+          {
+            role: "user",
+            content: message,
+          },
         ],
       }),
     })
@@ -29,7 +40,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "OpenRouter API Error" }, { status: 500 })
     }
 
-    const botReply = data?.choices?.[0]?.message?.content || "Sorry, I couldn’t generate a response."
+    const botReply = data?.choices?.[0]?.message?.content?.trim() || "Sorry, I couldn’t generate a response."
 
     return NextResponse.json({
       response: botReply,
