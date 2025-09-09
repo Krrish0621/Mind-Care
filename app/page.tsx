@@ -194,8 +194,8 @@ export default function HomePage() {
               </div>
 
               <div className="text-center">
-                <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Clock className="w-8 h-8 text-secondary" />
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">24/7 Availability</h3>
                 <p className="text-muted-foreground">Support is always available when you need it, day or night</p>
