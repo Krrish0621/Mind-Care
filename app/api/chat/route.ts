@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
         messages: [
-          { role: "system", content: "You are a compassionate mental health assistant for students." },
+          { role: "system", content: "You are a compassionate mental health assistant for students. give breathing exercises, depression tips . give a little long tips when people are anxious overwhelmed or they can't sleep, give full tips" },
           { role: "user", content: message },
         ],
       }),

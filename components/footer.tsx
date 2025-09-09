@@ -103,7 +103,7 @@ export function Footer() {
               <span>for your well-being</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2024 MindCare. All rights reserved. • If you're in crisis, please call 988 or visit your nearest
+              © 2025 MindCare. All rights reserved. • If you're in crisis, please call 988 or visit your nearest
               emergency room.
             </p>
           </div>
