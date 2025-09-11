@@ -4,21 +4,49 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Home, MessageCircle, Calendar, BookOpen, Users, BarChart3, Menu, X } from "lucide-react"
-import { useState } from "react"
+import {
+  Home,
+  MessageCircle,
+  Calendar,
+  BookOpen,
+  Users,
+  BarChart3,
+  Menu,
+  X,
+  LogOut,
+} from "lucide-react"
+import { useState, useEffect } from "react"
 
-const navigation = [
+const allNavigation = [
   { name: "Home", href: "/", icon: Home },
   { name: "Chat", href: "/chat", icon: MessageCircle },
   { name: "Book", href: "/book", icon: Calendar },
   { name: "Resources", href: "/resources", icon: BookOpen },
   { name: "Forum", href: "/forum", icon: Users },
-  { name: "Admin", href: "/admin", icon: BarChart3 },
+]
+
+const adminNavigation = [
+  { name: "Admin Dashboard", href: "/admin", icon: BarChart3 },
 ]
 
 export function Navigation() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [role, setRole] = useState<string | null>(null)
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role")
+    setRole(storedRole)
+  }, [])
+
+  // Only show links based on role
+  const filteredNavigation =
+    role === "admin" ? adminNavigation : allNavigation
+
+  const handleLogout = () => {
+    localStorage.removeItem("role")
+    window.location.href = "/login"
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border/50 shadow-sm">
@@ -33,30 +61,41 @@ export function Navigation() {
             </Link>
           </div>
 
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-2">
-              {navigation.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300",
-                      isActive
-                        ? "bg-primary text-white shadow-lg"
-                        : "text-muted-foreground hover:text-primary hover:bg-primary/10",
-                    )}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                )
-              })}
-            </div>
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-2">
+            {filteredNavigation.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300",
+                    isActive
+                      ? "bg-primary text-white shadow-lg"
+                      : "text-muted-foreground hover:text-primary hover:bg-primary/10",
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.name}</span>
+                </Link>
+              )
+            })}
+
+            {role && (
+              <Button
+                variant="ghost"
+                className="text-sm text-muted-foreground hover:text-red-500"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Logout
+              </Button>
+            )}
           </div>
 
+          {/* Mobile Menu Toggle */}
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -69,10 +108,11 @@ export function Navigation() {
           </div>
         </div>
 
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border/50">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
                 return (
@@ -92,6 +132,19 @@ export function Navigation() {
                   </Link>
                 )
               })}
+
+              {role && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    handleLogout()
+                  }}
+                  className="flex items-center space-x-2 w-full text-left text-red-600 hover:bg-red-50 px-3 py-2 rounded-xl"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
+              )}
             </div>
           </div>
         )}

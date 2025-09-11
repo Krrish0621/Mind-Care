@@ -1,4 +1,7 @@
 "use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -8,6 +11,20 @@ import { MessageCircle, Calendar, BookOpen, Users, Heart, Shield, Clock, Star } 
 import { Typewriter } from "react-simple-typewriter"
 
 export default function HomePage() {
+  const router = useRouter()
+  const [role, setRole] = useState<string | null>(null)
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role")
+    if (!storedRole) {
+      router.push("/login")
+    } else {
+      setRole(storedRole)
+    }
+  }, [])
+
+  if (!role) return null
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />

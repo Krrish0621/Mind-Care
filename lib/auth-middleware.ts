@@ -50,3 +50,4 @@ export function requireAuth(requiredRole?: "admin" | "counsellor") {
     return (request: NextRequest) => withAuth(request, handler, requiredRole)
   }
 }
+
