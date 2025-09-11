@@ -81,7 +81,7 @@ export default function LoginPage() {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-3xl font-extrabold text-center mb-6 text-purple-700"
         >
-          Welcome Back 💜
+          Mind-Care Login 💜
         </motion.h2>
 
         {/* Role Selection */}

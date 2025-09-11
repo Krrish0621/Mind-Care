@@ -45,7 +45,7 @@ const resources: Resource[] = [
   // Videos
   {
     id: "v1",
-    title: "Deep Breathing for Anxiety Relief",
+    title: "Deep Breathing for Anxiety Relief and Stress",
     description: "Learn effective breathing techniques to manage anxiety and panic attacks in just 10 minutes.",
     type: "video",
     topic: "anxiety",

@@ -113,7 +113,7 @@ export default function HomePage() {
                   </div>
                   <CardTitle className="text-primary">AI Chat Support</CardTitle>
                   <CardDescription>
-                    Get immediate support from our compassionate AI assistant, available 24/7
+                    Get immediate support from our compassionate AI assistant
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -153,7 +153,7 @@ export default function HomePage() {
                   </div>
                   <CardTitle className="text-accent">Resource Hub</CardTitle>
                   <CardDescription>
-                    Access videos, guides, and tools for anxiety, sleep, and stress management
+                    Access videos, guides, and tools for anxiety, sleep.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

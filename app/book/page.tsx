@@ -415,8 +415,8 @@ export default function BookPage() {
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Brain className="w-6 h-6 text-secondary" />
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Brain className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-medium text-foreground mb-2">Professional Support</h3>
                 <p className="text-sm text-muted-foreground">
