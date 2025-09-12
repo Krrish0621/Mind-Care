@@ -42,12 +42,12 @@ interface Counselor {
 const counselors: Counselor[] = [
   {
     id: "1",
-    name: "Dr. Sarah Chen",
+    name: "Dr. Anita Joshi",
     title: "Licensed Clinical Psychologist",
     specialties: ["Anxiety", "Depression", "Trauma"],
     rating: 4.9,
     experience: "8 years",
-    bio: "Dr. Chen specializes in cognitive behavioral therapy and has extensive experience helping students manage anxiety and depression.",
+    bio: "Dr. Joshi specializes in cognitive behavioral therapy and has extensive experience helping students manage anxiety and depression.",
     availability: [
       { date: "2025-09-13", times: ["09:00", "11:00", "14:00","19:00"] },
       { date: "2025-09-14", times: ["10:00", "13:00", "15:00","20:00"] },
@@ -72,12 +72,12 @@ const counselors: Counselor[] = [
   },
   {
     id: "2",
-    name: "Dr. Michael Rodriguez",
+    name: "Dr. Mukesh Kumar",
     title: "Licensed Marriage & Family Therapist",
     specialties: ["Relationships", "Family Issues", "Stress Management"],
     rating: 4.8,
     experience: "12 years",
-    bio: "Dr. Rodriguez focuses on helping individuals navigate relationship challenges and develop healthy coping strategies.",
+    bio: "Dr. Kumar focuses on helping individuals navigate relationship challenges and develop healthy coping strategies.",
     availability: [
       { date: "2025-09-15", times: ["10:00", "12:00", "15:00"] },
       { date: "2025-09-16", times: ["09:00", "11:00", "14:00", "16:00"] },
@@ -87,12 +87,12 @@ const counselors: Counselor[] = [
   },
   {
     id: "3",
-    name: "Dr. Emily Johnson",
+    name: "Dr. Sanjana Tiwari",
     title: "Licensed Professional Counselor",
     specialties: ["Student Life", "Academic Stress", "Self-Esteem"],
     rating: 4.9,
     experience: "6 years",
-    bio: "Dr. Johnson specializes in working with college students and young adults, helping them navigate academic and personal challenges.",
+    bio: "Dr. Tiwari specializes in working with college students and young adults, helping them navigate academic and personal challenges.",
     availability: [
       { date: "2025-09-15", times: ["13:00", "15:00"] },
       { date: "2025-09-17", times: ["10:00", "12:00", "14:00", "16:00"] },
