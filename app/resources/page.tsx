@@ -37,6 +37,7 @@ interface Resource {
   views: number
   language: string
   thumbnail?: string
+  videoUrl?: string
   author: string
   tags: string[]
 }
@@ -55,6 +56,8 @@ const resources: Resource[] = [
     language: "English",
     author: "Dr. Sarah Chen",
     tags: ["breathing", "anxiety", "quick-relief"],
+    thumbnail: "/thumbnails/anxiety.jpg",
+    videoUrl: "https://www.youtube.com/embed/LiUnFJ8P4gM?si=_OH7tVtImNUltq9_",
   },
   {
     id: "v2",
@@ -68,6 +71,8 @@ const resources: Resource[] = [
     language: "English",
     author: "Dr. Michael Rodriguez",
     tags: ["sleep", "habits", "wellness"],
+    thumbnail: "/thumbnails/sleep.jpg",
+    videoUrl: "https://www.youtube.com/embed/fk-_SwHhLLc?si=y9DxbP3wY5Rtd8x7",
   },
   {
     id: "v3",
@@ -81,6 +86,8 @@ const resources: Resource[] = [
     language: "English",
     author: "Dr. Emily Johnson",
     tags: ["study", "exams", "students"],
+    thumbnail: "/thumbnails/study-stress.jpg",
+    videoUrl: "https://www.youtube.com/embed/Bk2-dKH2Ta4?si=v5Ijpoog5OUHKZb8",
   },
   // Audio
   {
@@ -95,6 +102,7 @@ const resources: Resource[] = [
     language: "English",
     author: "Mindfulness Center",
     tags: ["meditation", "sleep", "relaxation"],
+    thumbnail: "/thumbnails/meditation-audio.jpg",
   },
   {
     id: "a2",
@@ -108,6 +116,7 @@ const resources: Resource[] = [
     language: "English",
     author: "Wellness Institute",
     tags: ["relaxation", "anxiety", "body-awareness"],
+    thumbnail: "/thumbnails/muscle-relaxation.jpg",
   },
   {
     id: "a3",
@@ -121,6 +130,7 @@ const resources: Resource[] = [
     language: "English",
     author: "Study Sounds",
     tags: ["focus", "concentration", "background"],
+    thumbnail: "/thumbnails/focus-sounds.jpg",
   },
   // Guides
   {
@@ -180,11 +190,48 @@ const languages = [
   { value: "mandarin", label: "中文" },
 ]
 
+function VideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: () => void; videoUrl: string | null }) {
+  if (!open) return null
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl p-4 relative max-w-4xl w-full">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 rounded-lg text-gray-600 hover:text-gray-900 transition focus:outline-none focus:ring-2 focus:ring-purple-400"
+          aria-label="Close video modal"
+        >
+          &times;
+        </button>
+        <div className="aspect-video bg-black rounded-lg overflow-hidden">
+          {videoUrl ? (
+            <iframe
+              width="100%"
+              height="100%"
+              src={videoUrl}
+              title="Video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+              frameBorder="0"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 select-none">
+              No video available
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ResourcesPage() {
   const [activeTab, setActiveTab] = useState("videos")
   const [selectedTopic, setSelectedTopic] = useState("all")
   const [selectedLanguage, setSelectedLanguage] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null)
 
   const filteredResources = resources.filter((resource) => {
     const matchesTab =
@@ -233,28 +280,28 @@ export default function ResourcesPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Mental Health Resources</h1>
-          <p className="text-muted-foreground">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-extrabold text-foreground mb-3">Mental Health Resources</h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Access videos, audio content, and guides to support your mental wellness journey
           </p>
         </div>
 
         {/* Filters */}
-        <Card className="mb-8">
+        <Card className="mb-10">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 text-lg font-semibold">
               <Filter className="w-5 h-5" />
               <span>Filter Resources</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">Search</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     placeholder="Search resources..."
                     value={searchQuery}
@@ -276,7 +323,7 @@ export default function ResourcesPage() {
                       return (
                         <SelectItem key={topic.value} value={topic.value}>
                           <div className="flex items-center space-x-2">
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-5 h-5" />
                             <span>{topic.label}</span>
                           </div>
                         </SelectItem>
@@ -296,7 +343,7 @@ export default function ResourcesPage() {
                     {languages.map((language) => (
                       <SelectItem key={language.value} value={language.value}>
                         <div className="flex items-center space-x-2">
-                          <Globe className="w-4 h-4" />
+                          <Globe className="w-5 h-5" />
                           <span>{language.label}</span>
                         </div>
                       </SelectItem>
@@ -324,33 +371,44 @@ export default function ResourcesPage() {
 
         {/* Resource Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="videos" className="flex items-center space-x-2">
-              <Play className="w-4 h-4" />
+          <TabsList className="grid w-full grid-cols-3 mb-10 text-lg font-semibold">
+            <TabsTrigger value="videos" className="flex items-center space-x-2 justify-center">
+              <Play className="w-5 h-5" />
               <span>Videos</span>
             </TabsTrigger>
-            <TabsTrigger value="audio" className="flex items-center space-x-2">
-              <Headphones className="w-4 h-4" />
+            <TabsTrigger value="audio" className="flex items-center space-x-2 justify-center">
+              <Headphones className="w-5 h-5" />
               <span>Audio</span>
             </TabsTrigger>
-            <TabsTrigger value="guides" className="flex items-center space-x-2">
-              <BookOpen className="w-4 h-4" />
+            <TabsTrigger value="guides" className="flex items-center space-x-2 justify-center">
+              <BookOpen className="w-5 h-5" />
               <span>Guides</span>
             </TabsTrigger>
           </TabsList>
 
+          {/* VIDEOS TAB */}
           <TabsContent value="videos">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredResources.map((resource) => {
+                if (resource.type !== "video") return null
                 const Icon = getResourceIcon(resource.type)
                 return (
-                  <Card key={resource.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={resource.id} className="hover:shadow-2xl transition-shadow rounded-xl">
                     <CardHeader>
-                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center mb-4">
-                        <Icon className="w-12 h-12 text-muted-foreground" />
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+                        {resource.thumbnail ? (
+                          <img
+                            src={resource.thumbnail}
+                            alt={resource.title}
+                            className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                          />
+                        ) : (
+                          <Icon className="w-12 h-12 text-muted-foreground" />
+                        )}
                       </div>
-                      <div className="flex items-start justify-between">
-                        <Badge className={getTopicColor(resource.topic)} variant="secondary">
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge className={`${getTopicColor(resource.topic)} uppercase tracking-widest text-xs font-semibold`}>
                           {resource.topic.replace("-", " ")}
                         </Badge>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
@@ -358,30 +416,37 @@ export default function ResourcesPage() {
                           <span>{resource.rating}</span>
                         </div>
                       </div>
-                      <CardTitle className="text-lg">{resource.title}</CardTitle>
-                      <CardDescription>{resource.description}</CardDescription>
+                      <CardTitle className="text-xl font-semibold truncate">{resource.title}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground line-clamp-3">{resource.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-5">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-5 h-5" />
                           <span>{resource.duration}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-5 h-5" />
                           <span>{resource.views.toLocaleString()}</span>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-5">
                         {resource.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge key={index} variant="outline" className="text-xs px-2 py-1 rounded-lg font-medium">
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">By {resource.author}</p>
-                      <Button className="w-full">
-                        <Icon className="w-4 h-4 mr-2" />
+                      <p className="text-sm text-muted-foreground mb-6 truncate">By {resource.author}</p>
+                      <Button
+                        className="w-full"
+                        onClick={() => {
+                          setActiveVideoUrl(resource.videoUrl || null)
+                          setModalOpen(true)
+                        }}
+                        variant="default"
+                      >
+                        <Icon className="w-5 h-5 mr-2" />
                         Watch Video
                       </Button>
                     </CardContent>
@@ -391,18 +456,29 @@ export default function ResourcesPage() {
             </div>
           </TabsContent>
 
+          {/* AUDIO TAB */}
           <TabsContent value="audio">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredResources.map((resource) => {
+                if (resource.type !== "audio") return null
                 const Icon = getResourceIcon(resource.type)
                 return (
-                  <Card key={resource.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={resource.id} className="hover:shadow-2xl transition-shadow rounded-xl">
                     <CardHeader>
-                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center mb-4">
-                        <Icon className="w-12 h-12 text-primary" />
+                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+                        {resource.thumbnail ? (
+                          <img
+                            src={resource.thumbnail}
+                            alt={resource.title}
+                            className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                          />
+                        ) : (
+                          <Icon className="w-12 h-12 text-primary" />
+                        )}
                       </div>
-                      <div className="flex items-start justify-between">
-                        <Badge className={getTopicColor(resource.topic)} variant="secondary">
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge className={`${getTopicColor(resource.topic)} uppercase tracking-widest text-xs font-semibold`}>
                           {resource.topic.replace("-", " ")}
                         </Badge>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
@@ -410,35 +486,35 @@ export default function ResourcesPage() {
                           <span>{resource.rating}</span>
                         </div>
                       </div>
-                      <CardTitle className="text-lg">{resource.title}</CardTitle>
-                      <CardDescription>{resource.description}</CardDescription>
+                      <CardTitle className="text-xl font-semibold truncate">{resource.title}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground line-clamp-3">{resource.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-5">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-5 h-5" />
                           <span>{resource.duration}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-5 h-5" />
                           <span>{resource.views.toLocaleString()}</span>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-5">
                         {resource.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge key={index} variant="outline" className="text-xs px-2 py-1 rounded-lg font-medium">
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">By {resource.author}</p>
-                      <div className="flex space-x-2">
-                        <Button className="flex-1">
-                          <Icon className="w-4 h-4 mr-2" />
+                      <p className="text-sm text-muted-foreground mb-6 truncate">By {resource.author}</p>
+                      <div className="flex space-x-3">
+                        <Button className="flex-1" variant="default">
+                          <Icon className="w-5 h-5 mr-2" />
                           Listen
                         </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="w-4 h-4" />
+                        <Button variant="outline" size="sm" className="flex items-center justify-center">
+                          <Download className="w-5 h-5" />
                         </Button>
                       </div>
                     </CardContent>
@@ -448,18 +524,20 @@ export default function ResourcesPage() {
             </div>
           </TabsContent>
 
+          {/* GUIDES TAB */}
           <TabsContent value="guides">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredResources.map((resource) => {
+                if (resource.type !== "guide") return null
                 const Icon = getResourceIcon(resource.type)
                 return (
-                  <Card key={resource.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={resource.id} className="hover:shadow-2xl transition-shadow rounded-xl">
                     <CardHeader>
                       <div className="aspect-video bg-gradient-to-br from-accent/10 to-primary/10 rounded-lg flex items-center justify-center mb-4">
                         <Icon className="w-12 h-12 text-accent" />
                       </div>
-                      <div className="flex items-start justify-between">
-                        <Badge className={getTopicColor(resource.topic)} variant="secondary">
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge className={`${getTopicColor(resource.topic)} uppercase tracking-widest text-xs font-semibold`}>
                           {resource.topic.replace("-", " ")}
                         </Badge>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
@@ -467,35 +545,35 @@ export default function ResourcesPage() {
                           <span>{resource.rating}</span>
                         </div>
                       </div>
-                      <CardTitle className="text-lg">{resource.title}</CardTitle>
-                      <CardDescription>{resource.description}</CardDescription>
+                      <CardTitle className="text-xl font-semibold truncate">{resource.title}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground line-clamp-3">{resource.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-5">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-5 h-5" />
                           <span>{resource.duration}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-5 h-5" />
                           <span>{resource.views.toLocaleString()}</span>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-5">
                         {resource.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge key={index} variant="outline" className="text-xs px-2 py-1 rounded-lg font-medium">
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">By {resource.author}</p>
-                      <div className="flex space-x-2">
-                        <Button className="flex-1">
-                          <Icon className="w-4 h-4 mr-2" />
+                      <p className="text-sm text-muted-foreground mb-6 truncate">By {resource.author}</p>
+                      <div className="flex space-x-3">
+                        <Button className="flex-1" variant="default">
+                          <Icon className="w-5 h-5 mr-2" />
                           Read Guide
                         </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="w-4 h-4" />
+                        <Button variant="outline" size="sm" className="flex items-center justify-center">
+                          <Download className="w-5 h-5" />
                         </Button>
                       </div>
                     </CardContent>
@@ -507,20 +585,22 @@ export default function ResourcesPage() {
         </Tabs>
 
         {filteredResources.length === 0 && (
-          <Card className="text-center py-12">
+          <Card className="text-center py-14 max-w-lg mx-auto">
             <CardContent>
-              <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No resources found</h3>
-              <p className="text-muted-foreground mb-4">
+              <Heart className="w-14 h-14 text-muted-foreground mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-foreground mb-3">No resources found</h3>
+              <p className="text-muted-foreground mb-6">
                 Try adjusting your filters or search terms to find the resources you're looking for.
               </p>
               <Button
                 variant="outline"
+                size="lg"
                 onClick={() => {
                   setSelectedTopic("all")
                   setSelectedLanguage("all")
                   setSearchQuery("")
                 }}
+                className="mx-auto px-10 py-3 rounded-full"
               >
                 Clear All Filters
               </Button>
@@ -530,6 +610,8 @@ export default function ResourcesPage() {
       </main>
 
       <Footer />
+
+      <VideoModal open={modalOpen} onClose={() => setModalOpen(false)} videoUrl={activeVideoUrl} />
     </div>
   )
 }
