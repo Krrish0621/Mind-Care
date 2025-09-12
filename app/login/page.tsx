@@ -29,11 +29,25 @@ export default function LoginPage() {
 
     if (isValid) {
       localStorage.setItem("role", role)
-      if (role === "admin") {
-        router.push("/admin")
-      } else {
-        router.push("/")
+
+      // ✅ Attempt to play background music
+      const audio = document.querySelector("audio") as HTMLAudioElement | null
+      if (audio) {
+        audio.volume = 0.4
+        audio
+          .play()
+          .then(() => console.log("🎵 Background music started"))
+          .catch((err) => console.warn("Autoplay blocked:", err))
       }
+
+      // ✅ Navigate after short delay (optional for smoother audio start)
+      setTimeout(() => {
+        if (role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push("/")
+        }
+      }, 300) // 300ms delay helps audio start before navigation
     } else {
       alert("Invalid credentials")
     }

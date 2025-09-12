@@ -3,11 +3,12 @@ import type { Metadata } from "next"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 import "./globals.css"
+import BackgroundMusic from "@/components/background"
 
 export const metadata: Metadata = {
   title: "MindCare - Mental Health Support Platform",
   description: "Your trusted digital mental health support platform with AI chat, counselor booking, and peer support.",
-    generator: 'Node.js'
+  generator: "Node.js",
 }
 
 export default function RootLayout({
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <Suspense fallback={null}>
+          <BackgroundMusic />
           {children}
           <Toaster />
         </Suspense>
