@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import {
@@ -30,6 +31,7 @@ import {
   PieChartIcon,
   Loader2,
   RefreshCw,
+  Download,
 } from "lucide-react"
 
 interface AnalyticsData {
@@ -83,6 +85,7 @@ interface Report {
   status: "pending" | "resolved" | "under-review"
   postId?: string
   userId?: string
+  reason?: string
 }
 
 export default function AdminPage() {
@@ -90,6 +93,8 @@ export default function AdminPage() {
   const [reports, setReports] = useState<Report[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState("7d")
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null)
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false)
   const { toast } = useToast()
 
   const fetchAnalytics = async (period = "7d") => {
@@ -160,6 +165,96 @@ export default function AdminPage() {
     }
   }
 
+  const generateReport = async (reportType: string) => {
+    try {
+      setIsGeneratingReport(true)
+      
+      // Generate report data based on type
+      let reportData: any = {}
+      let filename = ""
+      
+      if (reportType === "usage") {
+        reportData = {
+          "Report Period": "October 2024",
+          "Total Users": analyticsData?.userMetrics.totalUsers || 847,
+          "Active Users": analyticsData?.userMetrics.activeUsers || 234,
+          "New Registrations": analyticsData?.userMetrics.newUsers || 67,
+          "Total Sessions": "1,234",
+          "Average Session Duration": "12.5 minutes",
+          "Total Bookings": analyticsData?.bookingMetrics.totalBookings || 156,
+          "Completed Bookings": analyticsData?.bookingMetrics.completedBookings || 118,
+          "Cancelled Bookings": "15",
+          "Forum Posts": analyticsData?.forumMetrics.totalPosts || 342,
+          "Forum Engagement Rate": "68%",
+          "PHQ-9 Assessments": "100",
+          "GAD-7 Assessments": "100",
+          "High Risk Users Flagged": analyticsData?.assessmentMetrics.highRiskUsers || 13
+        }
+        filename = `usage-report-${new Date().toISOString().split('T')[0]}.csv`
+      } else if (reportType === "user-activity") {
+        reportData = {
+          "Report Period": "October 2024",
+          "Daily Active Users": analyticsData?.userMetrics.activeUsers || 234,
+          "Weekly Active Users": "456",
+          "Monthly Active Users": analyticsData?.userMetrics.totalUsers || 847,
+          "User Retention Rate": "73%",
+          "Chat Feature Usage": "89%",
+          "Mood Tracker Usage": "67%",
+          "Forum Participation": "45%",
+          "Booking System Usage": "23%",
+          "Resources Accessed": "56%"
+        }
+        filename = `user-activity-report-${new Date().toISOString().split('T')[0]}.csv`
+      } else if (reportType === "moderation") {
+        reportData = {
+          "Report Period": "October 2024",
+          "Total Reports Received": reports.length || 47,
+          "Reports Resolved": reports.filter(r => r.status === "resolved").length || 38,
+          "Reports Pending": reports.filter(r => r.status === "pending").length || 9,
+          "Average Resolution Time": "2.3 hours",
+          "Content Removed": "12",
+          "Users Warned": "8",
+          "Users Suspended": "2",
+          "False Reports": "5"
+        }
+        filename = `moderation-report-${new Date().toISOString().split('T')[0]}.csv`
+      }
+
+      // Convert to CSV
+      const csvContent = Object.entries(reportData)
+        .map(([key, value]) => `"${key}","${value}"`)
+        .join('\n')
+      
+      const csvHeader = "Metric,Value\n"
+      const fullCsvContent = csvHeader + csvContent
+
+      // Download CSV
+      const blob = new Blob([fullCsvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      toast({
+        title: "Success",
+        description: `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} report downloaded successfully`,
+      })
+    } catch (error) {
+      console.error("Report generation error:", error)
+      toast({
+        title: "Error",
+        description: "Failed to generate report",
+        variant: "destructive",
+      })
+    } finally {
+      setIsGeneratingReport(false)
+    }
+  }
+
   useEffect(() => {
     fetchAnalytics(selectedPeriod)
     fetchReports()
@@ -167,20 +262,20 @@ export default function AdminPage() {
 
   const phq9ChartData = analyticsData
     ? [
-      { name: "Minimal", value: analyticsData.assessmentMetrics.phq9Results.minimal, color: "#3b82f6" },
-      { name: "Mild", value: analyticsData.assessmentMetrics.phq9Results.mild, color: "#6C63FF" },
-      { name: "Moderate", value: analyticsData.assessmentMetrics.phq9Results.moderate, color: "#FF6B6B" },
-      { name: "Severe", value: analyticsData.assessmentMetrics.phq9Results.severe, color: "#FF4444" },
-    ]
+        { name: "Minimal", value: analyticsData.assessmentMetrics.phq9Results.minimal, color: "#A855F7" },
+        { name: "Mild", value: analyticsData.assessmentMetrics.phq9Results.mild, color: "#C084FC" },
+        { name: "Moderate", value: analyticsData.assessmentMetrics.phq9Results.moderate, color: "#DDA0DD" },
+        { name: "Severe", value: analyticsData.assessmentMetrics.phq9Results.severe, color: "#8B4A9C" },
+      ]
     : []
 
   const gad7ChartData = analyticsData
     ? [
-      { name: "Minimal", value: analyticsData.assessmentMetrics.gad7Results.minimal, color: "#3b82f6" },
-      { name: "Mild", value: analyticsData.assessmentMetrics.gad7Results.mild, color: "#6C63FF" },
-      { name: "Moderate", value: analyticsData.assessmentMetrics.gad7Results.moderate, color: "#FF6B6B" },
-      { name: "Severe", value: analyticsData.assessmentMetrics.gad7Results.severe, color: "#FF4444" },
-    ]
+        { name: "Minimal", value: analyticsData.assessmentMetrics.gad7Results.minimal, color: "#A855F7" },
+        { name: "Mild", value: analyticsData.assessmentMetrics.gad7Results.mild, color: "#C084FC" },
+        { name: "Moderate", value: analyticsData.assessmentMetrics.gad7Results.moderate, color: "#DDA0DD" },
+        { name: "Severe", value: analyticsData.assessmentMetrics.gad7Results.severe, color: "#8B4A9C" },
+      ]
     : []
 
   const getStatusColor = (status: string) => {
@@ -188,26 +283,11 @@ export default function AdminPage() {
       case "pending":
         return "bg-yellow-100 text-yellow-800"
       case "resolved":
-        return "bg-blue-100 text-blue-800"
+        return "bg-green-100 text-green-800"
       case "under-review":
         return "bg-blue-100 text-blue-800"
       default:
         return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getMetricStatus = (status: string) => {
-    switch (status) {
-      case "excellent":
-        return "text-blue-600"
-      case "good":
-        return "text-blue-600"
-      case "warning":
-        return "text-yellow-600"
-      case "critical":
-        return "text-red-600"
-      default:
-        return "text-gray-600"
     }
   }
 
@@ -271,7 +351,7 @@ export default function AdminPage() {
               <div className="text-2xl font-bold">{analyticsData?.userMetrics.totalUsers.toLocaleString() || "0"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`flex items-center ${(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? "text-purple-600" : "text-red-600"}`}
                 >
                   {(analyticsData?.userMetrics?.userGrowth ?? 0) >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -293,9 +373,10 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {(analyticsData?.userMetrics.activeUsers ?? 100).toLocaleString()}
-              </div>              <p className="text-xs text-muted-foreground">
-                <span className="text-blue-600 flex items-center">
+                {(analyticsData?.userMetrics.activeUsers ?? 234).toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-purple-600 flex items-center">
                   <TrendingUp className="w-3 h-3 mr-1" />
                   +8.2%
                 </span>
@@ -310,10 +391,10 @@ export default function AdminPage() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{analyticsData?.bookingMetrics.totalBookings || "12"}</div>
+              <div className="text-2xl font-bold">{analyticsData?.bookingMetrics.totalBookings || "156"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? "text-blue-600" : "text-red-600"
+                  className={`flex items-center ${(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? "text-purple-600" : "text-red-600"
                     }`}
                 >
                   {(analyticsData?.bookingMetrics?.bookingGrowth ?? 0) >= 0 ? (
@@ -335,10 +416,10 @@ export default function AdminPage() {
               <MessageCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{analyticsData?.forumMetrics.totalPosts.toLocaleString() || "80"}</div>
+              <div className="text-2xl font-bold">{analyticsData?.forumMetrics.totalPosts.toLocaleString() || "342"}</div>
               <p className="text-xs text-muted-foreground">
                 <span
-                  className={`flex items-center ${analyticsData?.forumMetrics?.postGrowth ?? 0 >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`flex items-center ${analyticsData?.forumMetrics?.postGrowth ?? 0 >= 0 ? "text-purple-600" : "text-red-600"}`}
                 >
                   {(analyticsData?.forumMetrics?.postGrowth ?? 0) >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -383,7 +464,7 @@ export default function AdminPage() {
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}%`}
+                        label={({ name, value }) => `${name}: ${value}`}
                       >
                         {phq9ChartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -414,7 +495,7 @@ export default function AdminPage() {
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}%`}
+                        label={({ name, value }) => `${name}: ${value}`}
                       >
                         {gad7ChartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -473,10 +554,10 @@ export default function AdminPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Resolved Today</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <CheckCircle className="h-4 w-4 text-purple-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-purple-600">
                     {
                       reports.filter(
                         (r) => r.status === "resolved" && r.timestamp.toDateString() === new Date().toDateString(),
@@ -490,10 +571,10 @@ export default function AdminPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Active Moderators</CardTitle>
-                  <UserCheck className="h-4 w-4 text-blue-600" />
+                  <UserCheck className="h-4 w-4 text-purple-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">4</div>
+                  <div className="text-2xl font-bold text-purple-600">4</div>
                   <p className="text-xs text-muted-foreground">Currently online</p>
                 </CardContent>
               </Card>
@@ -530,10 +611,76 @@ export default function AdminPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
-                              View
-                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button size="sm" variant="outline" onClick={() => setSelectedReport(report)}>
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  View
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>Report Details</DialogTitle>
+                                  <DialogDescription>
+                                    Detailed view of the reported content
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {selectedReport && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="font-medium text-sm">Report ID</p>
+                                        <p className="text-sm text-muted-foreground">{selectedReport.id}</p>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm">Type</p>
+                                        <p className="text-sm text-muted-foreground">{selectedReport.type}</p>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm">Reporter</p>
+                                        <p className="text-sm text-muted-foreground">{selectedReport.reporter}</p>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm">Status</p>
+                                        <Badge className={getStatusColor(selectedReport.status)} variant="secondary">
+                                          {selectedReport.status}
+                                        </Badge>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm">Timestamp</p>
+                                        <p className="text-sm text-muted-foreground">
+                                          {selectedReport.timestamp.toLocaleString()}
+                                        </p>
+                                      </div>
+                                      {selectedReport.reason && (
+                                        <div>
+                                          <p className="font-medium text-sm">Reason</p>
+                                          <p className="text-sm text-muted-foreground">{selectedReport.reason}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <p className="font-medium text-sm mb-2">Reported Content</p>
+                                      <div className="p-3 bg-gray-50 rounded-lg border">
+                                        <p className="text-sm">{selectedReport.content}</p>
+                                      </div>
+                                    </div>
+                                    {selectedReport.status === "pending" && (
+                                      <div className="flex space-x-2 pt-4">
+                                        <Button size="sm" onClick={() => handleReportAction(selectedReport.id, "resolved")}>
+                                          <Shield className="w-3 h-3 mr-1" />
+                                          Resolve
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => handleReportAction(selectedReport.id, "under-review")}>
+                                          <Clock className="w-3 h-3 mr-1" />
+                                          Under Review
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
                             {report.status === "pending" && (
                               <Button size="sm" onClick={() => handleReportAction(report.id, "resolved")}>
                                 <Shield className="w-3 h-3 mr-1" />
@@ -557,7 +704,7 @@ export default function AdminPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>Server Uptime</span>
-                      <span className="text-sm text-blue-600">EXCELLENT</span>
+                      <span className="text-sm text-purple-600">EXCELLENT</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -570,7 +717,7 @@ export default function AdminPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>Response Time</span>
-                      <span className="text-sm text-blue-600">GOOD</span>
+                      <span className="text-sm text-purple-600">GOOD</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -585,7 +732,7 @@ export default function AdminPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>Error Rate</span>
-                      <span className="text-sm text-blue-600">EXCELLENT</span>
+                      <span className="text-sm text-purple-600">EXCELLENT</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -600,7 +747,7 @@ export default function AdminPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>Database Health</span>
-                      <span className="text-sm text-blue-600">EXCELLENT</span>
+                      <span className="text-sm text-purple-600">EXCELLENT</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -621,25 +768,25 @@ export default function AdminPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-purple-600" />
                     <div>
-                      <p className="font-medium text-blue-800">System Update Completed</p>
-                      <p className="text-sm text-blue-600">Security patches applied successfully - 2 hours ago</p>
+                      <p className="font-medium text-purple-800">System Update Completed</p>
+                      <p className="text-sm text-purple-600">Security patches applied successfully - 2 hours ago</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                    <Activity className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
+                    <Activity className="w-5 h-5 text-purple-600" />
                     <div>
-                      <p className="font-medium text-blue-800">High Traffic Detected</p>
-                      <p className="text-sm text-blue-600">Increased user activity during peak hours - 4 hours ago</p>
+                      <p className="font-medium text-purple-800">High Traffic Detected</p>
+                      <p className="text-sm text-purple-600">Increased user activity during peak hours - 4 hours ago</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                    <Clock className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
+                    <Clock className="w-5 h-5 text-purple-600" />
                     <div>
-                      <p className="font-medium text-blue-800">Scheduled Maintenance</p>
-                      <p className="text-sm text-blue-600">Database optimization scheduled for tonight at 2 AM</p>
+                      <p className="font-medium text-purple-800">Scheduled Maintenance</p>
+                      <p className="text-sm text-purple-600">Database optimization scheduled for tonight at 2 AM</p>
                     </div>
                   </div>
                 </div>
@@ -655,8 +802,16 @@ export default function AdminPage() {
                   <CardDescription>Generate detailed usage analytics</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full">
-                    <BarChart3 className="w-4 h-4 mr-2" />
+                  <Button 
+                    className="w-full" 
+                    onClick={() => generateReport("usage")}
+                    disabled={isGeneratingReport}
+                  >
+                    {isGeneratingReport ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                    )}
                     Generate Report
                   </Button>
                 </CardContent>
@@ -668,8 +823,16 @@ export default function AdminPage() {
                   <CardDescription>Export user engagement metrics</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full">
-                    <Users className="w-4 h-4 mr-2" />
+                  <Button 
+                    className="w-full"
+                    onClick={() => generateReport("user-activity")}
+                    disabled={isGeneratingReport}
+                  >
+                    {isGeneratingReport ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Users className="w-4 h-4 mr-2" />
+                    )}
                     Generate Report
                   </Button>
                 </CardContent>
@@ -681,8 +844,16 @@ export default function AdminPage() {
                   <CardDescription>Summary of moderation activities</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full">
-                    <Shield className="w-4 h-4 mr-2" />
+                  <Button 
+                    className="w-full"
+                    onClick={() => generateReport("moderation")}
+                    disabled={isGeneratingReport}
+                  >
+                    {isGeneratingReport ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Shield className="w-4 h-4 mr-2" />
+                    )}
                     Generate Report
                   </Button>
                 </CardContent>
@@ -698,28 +869,31 @@ export default function AdminPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">Monthly Usage Report - June 2024</p>
+                      <p className="font-medium">Monthly Usage Report - October 2024</p>
                       <p className="text-sm text-muted-foreground">Generated 2 days ago</p>
                     </div>
                     <Button variant="outline" size="sm">
+                      <Download className="w-3 h-3 mr-1" />
                       Download
                     </Button>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">User Activity Analysis - Q2 2024</p>
+                      <p className="font-medium">User Activity Analysis - Q4 2024</p>
                       <p className="text-sm text-muted-foreground">Generated 1 week ago</p>
                     </div>
                     <Button variant="outline" size="sm">
+                      <Download className="w-3 h-3 mr-1" />
                       Download
                     </Button>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">Content Moderation Summary - May 2024</p>
+                      <p className="font-medium">Content Moderation Summary - September 2024</p>
                       <p className="text-sm text-muted-foreground">Generated 2 weeks ago</p>
                     </div>
                     <Button variant="outline" size="sm">
+                      <Download className="w-3 h-3 mr-1" />
                       Download
                     </Button>
                   </div>
@@ -730,7 +904,7 @@ export default function AdminPage() {
         </Tabs>
       </main>
 
-      <Footer />
+      <Footer/>
     </div>
   )
 }

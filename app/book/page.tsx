@@ -21,7 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Video, MapPin, Star, Clock, CalendarIcon, User, GraduationCap, Heart, Brain, Users } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Video, MapPin, Star, Clock, CalendarIcon, User, GraduationCap, Heart, Brain, Users, Sparkles, CheckCircle, Award, Shield, MessageCircle, ChevronRight, Phone, Mail, Globe } from "lucide-react"
 
 interface Counselor {
   id: string
@@ -47,26 +48,89 @@ const counselors: Counselor[] = [
     specialties: ["Anxiety", "Depression", "Trauma"],
     rating: 4.9,
     experience: "8 years",
+    image: "https://user-gen-media-assets.s3.amazonaws.com/gemini_images/cc533a40-aee2-4006-8c80-c5532d1d31e9.png",
     bio: "Dr. Joshi specializes in cognitive behavioral therapy and has extensive experience helping students manage anxiety and depression.",
     availability: [
-      { date: "2025-09-13", times: ["09:00", "11:00", "14:00","19:00"] },
-      { date: "2025-09-14", times: ["10:00", "13:00", "15:00","20:00"] },
-      { date: "2025-09-15", times: ["09:00", "11:00", "14:00","21:00"] },
-      { date: "2025-09-16", times: ["09:00", "11:00", "14:00","19:00"] },
-      { date: "2025-09-17", times: ["09:00", "11:00", "14:00","20:00"] },
-      { date: "2025-09-18", times: ["09:00", "11:00", "14:00","18:00"] },
-      { date: "2025-09-19", times: ["09:00", "11:00", "14:00","21:00"] },
-      { date: "2025-09-20", times: ["09:00", "11:00", "14:00","19:00"] },
-      { date: "2025-09-21", times: ["09:00", "11:00", "14:00","21:00"] },
-      { date: "2025-09-22", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-23", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-24", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-25", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-26", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-27", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-28", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-29", times: ["09:00", "11:00", "14:00"] },
-      { date: "2025-09-30", times: ["09:00", "11:00", "14:00"] }
+      { date: "2025-10-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] }
     ],
     modes: ["online", "offline"],
   },
@@ -77,11 +141,89 @@ const counselors: Counselor[] = [
     specialties: ["Relationships", "Family Issues", "Stress Management"],
     rating: 4.8,
     experience: "12 years",
+    image: "https://user-gen-media-assets.s3.amazonaws.com/gemini_images/24003866-9d59-41e0-88d2-6170e0252131.png",
     bio: "Dr. Kumar focuses on helping individuals navigate relationship challenges and develop healthy coping strategies.",
     availability: [
-      { date: "2025-09-15", times: ["10:00", "12:00", "15:00"] },
-      { date: "2025-09-16", times: ["09:00", "11:00", "14:00", "16:00"] },
-      { date: "2025-09-20", times: ["10:00", "13:00", "19:00"] },
+      { date: "2025-10-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] }
     ],
     modes: ["online", "offline"],
   },
@@ -92,15 +234,94 @@ const counselors: Counselor[] = [
     specialties: ["Student Life", "Academic Stress", "Self-Esteem"],
     rating: 4.9,
     experience: "6 years",
+    image: "https://user-gen-media-assets.s3.amazonaws.com/gemini_images/24c39bd2-26a2-44f0-b8c3-f3c88a308d1f.png",
     bio: "Dr. Tiwari specializes in working with college students and young adults, helping them navigate academic and personal challenges.",
     availability: [
-      { date: "2025-09-15", times: ["13:00", "15:00"] },
-      { date: "2025-09-17", times: ["10:00", "12:00", "14:00", "16:00"] },
-      { date: "2025-09-18", times: ["09:00", "11:00", "15:00", "19:00"] },
+      { date: "2025-10-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-10-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-11-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-01", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-02", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-03", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-04", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-05", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-06", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-07", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-08", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-09", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-10", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-11", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-12", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-13", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-14", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-15", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-16", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-17", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-18", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-19", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-20", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-21", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-22", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-23", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-24", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-25", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-26", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-27", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-28", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-29", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-30", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] },
+      { date: "2025-12-31", times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"] }
     ],
     modes: ["online"],
   },
 ]
+
 
 export default function BookPage() {
   const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(null)
@@ -110,11 +331,21 @@ export default function BookPage() {
   const [notes, setNotes] = useState("")
   const [contactInfo, setContactInfo] = useState({ name: "", email: "", phone: "" })
   const [isBookingOpen, setIsBookingOpen] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const { toast } = useToast()
+
+  useState(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mousemove', handleMouseMove)
+      return () => window.removeEventListener('mousemove', handleMouseMove)
+    }
+  })
 
   const getAvailableTimes = () => {
     if (!selectedCounselor || !selectedDate) return []
-
     const dateStr = selectedDate.toISOString().split("T")[0]
     const availability = selectedCounselor.availability.find((a) => a.date === dateStr)
     return availability?.times || []
@@ -130,13 +361,11 @@ export default function BookPage() {
       return
     }
 
-    // Simulate booking process
     toast({
       title: "Appointment Booked Successfully!",
       description: `Your ${selectedMode} session with ${selectedCounselor.name} is confirmed for ${selectedDate.toLocaleDateString()} at ${selectedTime}. You'll receive a confirmation email shortly.`,
     })
 
-    // Reset form
     setSelectedCounselor(null)
     setSelectedDate(undefined)
     setSelectedTime("")
@@ -145,314 +374,588 @@ export default function BookPage() {
     setIsBookingOpen(false)
   }
 
+  const specialtyColors = {
+    "Anxiety": "bg-purple-100 text-purple-700 border-purple-200",
+    "Depression": "bg-blue-100 text-blue-700 border-blue-200", 
+    "Trauma": "bg-red-100 text-red-700 border-red-200",
+    "Relationships": "bg-pink-100 text-pink-700 border-pink-200",
+    "Family Issues": "bg-orange-100 text-orange-700 border-orange-200",
+    "Stress Management": "bg-green-100 text-green-700 border-green-200",
+    "Student Life": "bg-indigo-100 text-indigo-700 border-indigo-200",
+    "Academic Stress": "bg-yellow-100 text-yellow-700 border-yellow-200",
+    "Self-Esteem": "bg-emerald-100 text-emerald-700 border-emerald-200"
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/60 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-32 left-10 w-96 h-96 bg-gradient-to-r from-blue-400/15 to-cyan-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-indigo-400/10 to-purple-400/10 rounded-full blur-3xl animate-spin-slow"></div>
+      </div>
+
+      {/* Mouse follower */}
+      <div 
+        className="fixed pointer-events-none z-10 w-6 h-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-sm transition-all duration-300 ease-out"
+        style={{
+          left: mousePosition.x - 12,
+          top: mousePosition.y - 12,
+        }}
+      />
+
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Book a Counseling Session</h1>
-          <p className="text-muted-foreground">
-            Connect with licensed mental health professionals who understand your needs
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        {/* Fixed Enhanced Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12 px-4"
+        >
+          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full mb-6 backdrop-blur-sm border border-white/20">
+            <CalendarIcon className="w-6 h-6 text-blue-600 mr-2" />
+            <Heart className="w-6 h-6 text-pink-600" />
+          </div>
+          
+          {/* Fixed heading with proper spacing and visibility */}
+          <div className="mb-6 overflow-visible">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent block py-2">
+                Book Your Counseling Session
+              </span>
+            </h1>
+          </div>
+          
+          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+            Connect with licensed mental health professionals who understand your journey and are here to support you every step of the way.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {counselors.map((counselor) => (
-            <Card key={counselor.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start space-x-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage src={counselor.image || "/placeholder.svg"} alt={counselor.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-lg">
-                      {counselor.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{counselor.name}</CardTitle>
-                    <CardDescription className="text-sm mb-2">{counselor.title}</CardDescription>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span>{counselor.rating}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <GraduationCap className="w-4 h-4" />
-                        <span>{counselor.experience}</span>
+        {/* Enhanced Counselor Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {counselors.map((counselor, index) => (
+            <motion.div
+              key={counselor.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
+            >
+              <Card className="group bg-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 h-full relative">
+                {/* Fixed Available Badge - Outside of CardHeader */}
+                <div className="absolute top-4 right-4 z-30">
+                  <Badge className="bg-emerald-500 text-white border-0 font-bold px-4 py-2 rounded-full shadow-lg">
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Available
+                  </Badge>
+                </div>
+
+                <CardHeader className="relative bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b border-white/20 pt-16 pb-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-4">
+                      <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/50 to-purple-600/50 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+                      <Avatar className="relative w-24 h-24 border-4 border-white shadow-xl">
+                        <AvatarImage 
+                          src={counselor.image} 
+                          alt={counselor.name}
+                          className="object-cover w-full h-full rounded-full"
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl font-bold w-full h-full">
+                          {counselor.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    
+                    <div className="w-full">
+                      <CardTitle className="text-xl text-gray-800 mb-2">{counselor.name}</CardTitle>
+                      <CardDescription className="text-gray-600 font-medium mb-4 leading-relaxed">
+                        {counselor.title}
+                      </CardDescription>
+                      
+                      <div className="flex items-center justify-center space-x-4 text-sm">
+                        <div className="flex items-center space-x-1 bg-yellow-100 px-3 py-2 rounded-full shadow-sm">
+                          <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                          <span className="font-semibold text-yellow-700">{counselor.rating}</span>
+                        </div>
+                        <div className="flex items-center space-x-1 bg-blue-100 px-3 py-2 rounded-full shadow-sm">
+                          <GraduationCap className="w-4 h-4 text-blue-600" />
+                          <span className="font-semibold text-blue-700">{counselor.experience}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
+                </CardHeader>
 
-              <CardContent>
-                <div className="space-y-4">
+                <CardContent className="p-6 space-y-6">
+                  {/* Specialties */}
                   <div>
-                    <h4 className="font-medium text-foreground mb-2">Specialties</h4>
-                    <div className="flex flex-wrap gap-1">
+                    <h4 className="font-bold text-gray-800 mb-3 flex items-center">
+                      <Brain className="w-4 h-4 mr-2 text-purple-600" />
+                      Specialties
+                    </h4>
+                    <div className="flex flex-wrap gap-2 justify-center">
                       {counselor.specialties.map((specialty, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge
+                          key={index}
+                          className={`${specialtyColors[specialty as keyof typeof specialtyColors] || 'bg-gray-100 text-gray-700 border-gray-200'} border font-medium px-3 py-1 rounded-full text-xs shadow-sm`}
+                        >
                           {specialty}
                         </Badge>
                       ))}
                     </div>
                   </div>
 
+                  {/* Available Modes */}
                   <div>
-                    <h4 className="font-medium text-foreground mb-2">Available Modes</h4>
-                    <div className="flex space-x-2">
+                    <h4 className="font-bold text-gray-800 mb-3 flex items-center">
+                      <Globe className="w-4 h-4 mr-2 text-blue-600" />
+                      Session Options
+                    </h4>
+                    <div className="flex justify-center space-x-3">
                       {counselor.modes.includes("online") && (
-                        <Badge variant="outline" className="text-xs">
-                          <Video className="w-3 h-3 mr-1" />
-                          Online
-                        </Badge>
+                        <div className="flex items-center space-x-2 bg-gradient-to-r from-green-100 to-emerald-100 px-3 py-2 rounded-xl border border-green-200 shadow-sm">
+                          <Video className="w-4 h-4 text-green-600" />
+                          <span className="text-sm font-medium text-green-700">Online</span>
+                        </div>
                       )}
                       {counselor.modes.includes("offline") && (
-                        <Badge variant="outline" className="text-xs">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          In-Person
-                        </Badge>
+                        <div className="flex items-center space-x-2 bg-gradient-to-r from-orange-100 to-red-100 px-3 py-2 rounded-xl border border-orange-200 shadow-sm">
+                          <MapPin className="w-4 h-4 text-orange-600" />
+                          <span className="text-sm font-medium text-orange-700">In-Person</span>
+                        </div>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground">{counselor.bio}</p>
+                  {/* Bio */}
+                  <p className="text-sm text-gray-600 leading-relaxed bg-gray-50/50 p-4 rounded-2xl border border-gray-200/50 text-center">
+                    {counselor.bio}
+                  </p>
 
+                  {/* Book Button */}
                   <Dialog
                     open={isBookingOpen && selectedCounselor?.id === counselor.id}
                     onOpenChange={setIsBookingOpen}
                   >
                     <DialogTrigger asChild>
                       <Button
-                        className="w-full"
+                        className="w-full h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group overflow-hidden"
                         onClick={() => {
                           setSelectedCounselor(counselor)
                           setIsBookingOpen(true)
                         }}
                       >
-                        <CalendarIcon className="w-4 h-4 mr-2" />
-                        Book Session
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                        <CalendarIcon className="w-5 h-5 mr-2" />
+                        Book Session with Dr. {counselor.name.split(" ")[1]}
+                        <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Book Session with {counselor.name}</DialogTitle>
-                        <DialogDescription>
-                          Complete the form below to schedule your counseling session
-                        </DialogDescription>
+                    
+                    <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-white/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+                      <DialogHeader className="text-center pb-6 border-b border-gray-200/50">
+                        <motion.div
+                          initial={{ opacity: 0, y: -20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <div className="flex items-center justify-center space-x-3 mb-4">
+                            <Avatar className="w-16 h-16 border-4 border-white shadow-xl">
+                              <AvatarImage 
+                                src={counselor.image} 
+                                alt={counselor.name}
+                                className="object-cover w-full h-full rounded-full"
+                              />
+                              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-lg font-bold">
+                                {counselor.name.split(" ").map((n) => n[0]).join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <DialogTitle className="text-2xl font-bold text-gray-800">
+                                Book Session with {counselor.name}
+                              </DialogTitle>
+                              <DialogDescription className="text-gray-600 font-medium">
+                                {counselor.title}
+                              </DialogDescription>
+                            </div>
+                          </div>
+                        </motion.div>
                       </DialogHeader>
 
-                      <div className="space-y-6">
+                      <div className="space-y-8 py-6">
                         {/* Contact Information */}
-                        <div className="space-y-4">
-                          <h3 className="font-medium text-foreground">Contact Information</h3>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2, duration: 0.5 }}
+                          className="space-y-4"
+                        >
+                          <h3 className="font-bold text-lg text-gray-800 flex items-center">
+                            <User className="w-5 h-5 mr-2 text-blue-600" />
+                            Contact Information
+                          </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="name">Full Name *</Label>
+                              <Label htmlFor="name" className="text-sm font-semibold text-gray-700 mb-2 block">Full Name *</Label>
                               <Input
                                 id="name"
                                 value={contactInfo.name}
                                 onChange={(e) => setContactInfo((prev) => ({ ...prev, name: e.target.value }))}
                                 placeholder="Enter your full name"
+                                className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
                               />
                             </div>
                             <div>
-                              <Label htmlFor="email">Email *</Label>
+                              <Label htmlFor="email" className="text-sm font-semibold text-gray-700 mb-2 block">Email *</Label>
                               <Input
                                 id="email"
                                 type="email"
                                 value={contactInfo.email}
                                 onChange={(e) => setContactInfo((prev) => ({ ...prev, email: e.target.value }))}
                                 placeholder="Enter your email"
+                                className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
                               />
                             </div>
                           </div>
                           <div>
-                            <Label htmlFor="phone">Phone Number (Optional)</Label>
+                            <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 mb-2 block">Phone Number (Optional)</Label>
                             <Input
                               id="phone"
                               value={contactInfo.phone}
                               onChange={(e) => setContactInfo((prev) => ({ ...prev, phone: e.target.value }))}
                               placeholder="Enter your phone number"
+                              className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
                             />
                           </div>
-                        </div>
+                        </motion.div>
 
                         {/* Session Mode */}
-                        <div className="space-y-4">
-                          <h3 className="font-medium text-foreground">Session Mode</h3>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3, duration: 0.5 }}
+                          className="space-y-4"
+                        >
+                          <h3 className="font-bold text-lg text-gray-800 flex items-center">
+                            <Video className="w-5 h-5 mr-2 text-purple-600" />
+                            Session Mode
+                          </h3>
                           <RadioGroup
                             value={selectedMode}
                             onValueChange={(value: "online" | "offline") => setSelectedMode(value)}
+                            className="grid grid-cols-1 md:grid-cols-2 gap-4"
                           >
                             {counselor.modes.includes("online") && (
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="online" id="online" />
-                                <Label htmlFor="online" className="flex items-center space-x-2 cursor-pointer">
-                                  <Video className="w-4 h-4" />
-                                  <span>Online Session (Video Call)</span>
+                              <div className="relative">
+                                <RadioGroupItem value="online" id="online" className="sr-only" />
+                                <Label 
+                                  htmlFor="online" 
+                                  className={`block cursor-pointer p-4 border-2 rounded-2xl transition-all duration-300 ${
+                                    selectedMode === "online" 
+                                      ? "border-green-400 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg" 
+                                      : "border-gray-200 bg-white/50 hover:border-green-300 hover:bg-green-50/50"
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                                      <Video className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold text-gray-800">Online Session</div>
+                                      <div className="text-sm text-gray-600">Secure video call from anywhere</div>
+                                    </div>
+                                  </div>
+                                  {selectedMode === "online" && (
+                                    <div className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                      <CheckCircle className="w-4 h-4 text-white" />
+                                    </div>
+                                  )}
                                 </Label>
                               </div>
                             )}
                             {counselor.modes.includes("offline") && (
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="offline" id="offline" />
-                                <Label htmlFor="offline" className="flex items-center space-x-2 cursor-pointer">
-                                  <MapPin className="w-4 h-4" />
-                                  <span>In-Person Session</span>
+                              <div className="relative">
+                                <RadioGroupItem value="offline" id="offline" className="sr-only" />
+                                <Label 
+                                  htmlFor="offline" 
+                                  className={`block cursor-pointer p-4 border-2 rounded-2xl transition-all duration-300 ${
+                                    selectedMode === "offline" 
+                                      ? "border-orange-400 bg-gradient-to-r from-orange-50 to-red-50 shadow-lg" 
+                                      : "border-gray-200 bg-white/50 hover:border-orange-300 hover:bg-orange-50/50"
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                                      <MapPin className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold text-gray-800">In-Person Session</div>
+                                      <div className="text-sm text-gray-600">Face-to-face at our clinic</div>
+                                    </div>
+                                  </div>
+                                  {selectedMode === "offline" && (
+                                    <div className="absolute top-2 right-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                      <CheckCircle className="w-4 h-4 text-white" />
+                                    </div>
+                                  )}
                                 </Label>
                               </div>
                             )}
                           </RadioGroup>
-                        </div>
+                        </motion.div>
 
-                        {/* Date Selection */}
-                        <div className="space-y-4">
-                          <h3 className="font-medium text-foreground">Select Date</h3>
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => {
-                              if (date) setSelectedDate(date)
-                            }}
-                            disabled={(date) => {
-                              if (!counselor?.availability) return true
-
-                              // Convert calendar date to local YYYY-MM-DD
-                              const dateStr = date.toLocaleDateString("en-CA") // gives YYYY-MM-DD in local time
-
-                              // Check if that date exists in availability
-                              return !counselor.availability.some(
-                                (a: { date: string }) => a.date === dateStr
-                              )
-                            }}
-                            className="rounded-md border"
-                          />
-                        </div>
-
-
-                        {/* Time Selection */}
-                        {selectedDate && (
-                          <div className="space-y-4">
-                            <h3 className="font-medium text-foreground">Select Time</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                              {getAvailableTimes().map((time) => (
-                                <Button
-                                  key={time}
-                                  variant={selectedTime === time ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setSelectedTime(time)}
-                                  className="justify-center"
-                                >
-                                  <Clock className="w-3 h-3 mr-1" />
-                                  {time}
-                                </Button>
-                              ))}
+                        {/* Date and Time Selection */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                          {/* Date Selection */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.5 }}
+                            className="space-y-4"
+                          >
+                            <h3 className="font-bold text-lg text-gray-800 flex items-center">
+                              <CalendarIcon className="w-5 h-5 mr-2 text-indigo-600" />
+                              Select Date
+                            </h3>
+                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                              <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={(date) => {
+                                  if (date) setSelectedDate(date)
+                                }}
+                                disabled={(date) => {
+                                  if (!counselor?.availability) return true
+                                  const dateStr = date.toLocaleDateString("en-CA")
+                                  return !counselor.availability.some((a: { date: string }) => a.date === dateStr)
+                                }}
+                                className="rounded-xl border-0"
+                              />
                             </div>
-                          </div>
-                        )}
+                          </motion.div>
+
+                          {/* Time Selection */}
+                          {selectedDate && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.5, duration: 0.5 }}
+                              className="space-y-4"
+                            >
+                              <h3 className="font-bold text-lg text-gray-800 flex items-center">
+                                <Clock className="w-5 h-5 mr-2 text-pink-600" />
+                                Available Times
+                              </h3>
+                              <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
+                                {getAvailableTimes().map((time, index) => (
+                                  <motion.div
+                                    key={time}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.1 * index, duration: 0.3 }}
+                                  >
+                                    <Button
+                                      variant={selectedTime === time ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setSelectedTime(time)}
+                                      className={`w-full h-12 rounded-xl font-medium transition-all duration-300 ${
+                                        selectedTime === time
+                                          ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg transform scale-105"
+                                          : "bg-white/60 border-gray-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 hover:border-pink-300"
+                                      }`}
+                                    >
+                                      <Clock className="w-4 h-4 mr-2" />
+                                      {time}
+                                    </Button>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
 
                         {/* Additional Notes */}
-                        <div className="space-y-4">
-                          <h3 className="font-medium text-foreground">Additional Notes (Optional)</h3>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.6, duration: 0.5 }}
+                          className="space-y-4"
+                        >
+                          <h3 className="font-bold text-lg text-gray-800 flex items-center">
+                            <MessageCircle className="w-5 h-5 mr-2 text-green-600" />
+                            Additional Notes (Optional)
+                          </h3>
                           <Textarea
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            placeholder="Share anything you'd like your counselor to know before the session..."
-                            rows={3}
+                            placeholder="Share anything you'd like your counselor to know before the session. This helps them prepare to support you better..."
+                            rows={4}
+                            className="bg-white/60 backdrop-blur-sm border border-gray-200 rounded-2xl p-4 resize-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300"
                           />
-                        </div>
+                        </motion.div>
 
                         {/* Booking Summary */}
-                        {selectedDate && selectedTime && (
-                          <Card className="bg-muted/50">
-                            <CardHeader>
-                              <CardTitle className="text-lg">Booking Summary</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Counselor:</span>
-                                <span className="font-medium">{counselor.name}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Date:</span>
-                                <span className="font-medium">{selectedDate.toLocaleDateString()}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Time:</span>
-                                <span className="font-medium">{selectedTime}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Mode:</span>
-                                <span className="font-medium capitalize">{selectedMode}</span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
+                        <AnimatePresence>
+                          {selectedDate && selectedTime && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                              transition={{ duration: 0.4 }}
+                            >
+                              <Card className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200/50 rounded-2xl shadow-xl">
+                                <CardHeader>
+                                  <CardTitle className="text-xl font-bold text-gray-800 flex items-center">
+                                    <CheckCircle className="w-6 h-6 mr-2 text-indigo-600" />
+                                    Booking Summary
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600 font-medium">Counselor:</span>
+                                      <span className="font-bold text-gray-800">{counselor.name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600 font-medium">Date:</span>
+                                      <span className="font-bold text-gray-800">{selectedDate.toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600 font-medium">Time:</span>
+                                      <span className="font-bold text-gray-800">{selectedTime}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600 font-medium">Mode:</span>
+                                      <span className="font-bold text-gray-800 capitalize">{selectedMode}</span>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
 
-                        <div className="flex space-x-3">
-                          <Button variant="outline" onClick={() => setIsBookingOpen(false)} className="flex-1">
+                        {/* Action Buttons */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.7, duration: 0.5 }}
+                          className="flex space-x-4 pt-4"
+                        >
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsBookingOpen(false)} 
+                            className="flex-1 h-14 bg-white/60 border-2 border-gray-200 hover:bg-gray-50 rounded-2xl font-semibold transition-all duration-300"
+                          >
                             Cancel
                           </Button>
-                          <Button onClick={handleBooking} className="flex-1">
+                          <Button 
+                            onClick={handleBooking} 
+                            className="flex-1 h-14 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <CheckCircle className="w-5 h-5 mr-2" />
                             Confirm Booking
                           </Button>
-                        </div>
+                        </motion.div>
                       </div>
                     </DialogContent>
                   </Dialog>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
-        {/* Information Section */}
-        <Card className="mt-12">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Heart className="w-5 h-5 text-primary" />
-              <span>What to Expect</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <User className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-medium text-foreground mb-2">Confidential & Safe</h3>
-                <p className="text-sm text-muted-foreground">
-                  All sessions are completely confidential and conducted in a safe, judgment-free environment.
-                </p>
+        {/* Enhanced Information Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 border-b border-white/20 text-center">
+              <CardTitle className="text-2xl font-bold text-gray-800 flex items-center justify-center">
+                <Heart className="w-6 h-6 mr-3 text-red-500" />
+                What to Expect from Your Session
+                <Sparkles className="w-6 h-6 ml-3 text-yellow-500" />
+              </CardTitle>
+              <CardDescription className="text-gray-600 text-lg mt-2">
+                Your mental health journey is our priority
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="text-center group"
+                >
+                  <div className="relative mb-6">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto shadow-xl transform group-hover:scale-110 transition-all duration-300">
+                      <Shield className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-xl text-gray-800 mb-3">Confidential & Safe</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    All sessions are completely confidential and conducted in a safe, judgment-free environment where you can express yourself freely.
+                  </p>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1, duration: 0.5 }}
+                  className="text-center group"
+                >
+                  <div className="relative mb-6">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto shadow-xl transform group-hover:scale-110 transition-all duration-300">
+                      <Award className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-xl text-gray-800 mb-3">Professional Support</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Work with licensed professionals who specialize in student mental health and have years of experience helping people like you.
+                  </p>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                  className="text-center group"
+                >
+                  <div className="relative mb-6">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto shadow-xl transform group-hover:scale-110 transition-all duration-300">
+                      <Users className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-xl text-gray-800 mb-3">Flexible Options</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Choose between online video sessions or in-person meetings based on your comfort level and preferences.
+                  </p>
+                </motion.div>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Brain className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-medium text-foreground mb-2">Professional Support</h3>
-                <p className="text-sm text-muted-foreground">
-                  Work with licensed professionals who specialize in student mental health and wellness.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Users className="w-6 h-6 text-accent" />
-                </div>
-                <h3 className="font-medium text-foreground mb-2">Flexible Options</h3>
-                <p className="text-sm text-muted-foreground">
-                  Choose between online video sessions or in-person meetings based on your comfort and needs.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       </main>
 
       <Footer />
+
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+      `}</style>
     </div>
   )
 }

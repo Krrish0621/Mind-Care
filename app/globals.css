@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
 :root {
   /* Updated to bright, uplifting color palette */
   --background: #fdf4ff; /* Light lavender-white */

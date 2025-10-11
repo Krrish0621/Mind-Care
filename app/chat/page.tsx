@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
-import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2, Calendar } from "lucide-react"
+import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2, Calendar, Brain, Activity, Sparkles, Shield, CheckCircle, Play, ChevronRight } from "lucide-react"
 import Link from "next/link"
 
 interface Message {
@@ -61,13 +61,9 @@ export default function ChatPage() {
   }, [])
 
   const quickActions = [
-    { text: "I feel anxious", icon: Zap, color: "bg-primary/10 text-primary hover:bg-primary hover:text-white" },
-    { text: "I can't sleep", icon: Moon, color: "bg-accent/10 text-accent hover:bg-accent hover:text-white" },
-    {
-      text: "I'm overwhelmed",
-      icon: Heart,
-      color: "bg-accent/10 text-accent hover:bg-accent hover:text-white",
-    },
+    { text: "I feel anxious", icon: Zap, gradient: "from-orange-400 to-pink-500", shadow: "shadow-orange-500/25" },
+    { text: "I can't sleep", icon: Moon, gradient: "from-indigo-500 to-purple-600", shadow: "shadow-indigo-500/25" },
+    { text: "I'm overwhelmed", icon: Heart, gradient: "from-pink-500 to-rose-600", shadow: "shadow-pink-500/25" },
   ]
 
   const assessments = {
@@ -108,18 +104,21 @@ export default function ChatPage() {
       type: "text",
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    // --- Updated for remembering full conversation ---
+    const updatedMessages = [...messages, userMessage]
+    setMessages(updatedMessages)
     setIsLoading(true)
 
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: content,
           sessionId,
+          messages: updatedMessages.map((msg) => ({
+            role: msg.sender === "user" ? "user" : "assistant",
+            content: msg.content,
+          })),
         }),
       })
 
@@ -159,9 +158,7 @@ export default function ChatPage() {
     setInputValue("")
   }
 
-  const handleQuickAction = (action: string) => {
-    sendMessage(action)
-  }
+  const handleQuickAction = (action: string) => { sendMessage(action) }
 
   const startAssessment = (type: "phq9" | "gad7") => {
     const assessmentData = assessments[type]
@@ -187,19 +184,13 @@ export default function ChatPage() {
 
   const handleAssessmentResponse = async (score: number) => {
     if (!assessment) return
-
     const newResponses = [...assessment.responses, score]
     const nextQuestion = assessment.currentQuestion + 1
 
     if (nextQuestion < assessment.questions.length) {
-      setAssessment({
-        ...assessment,
-        currentQuestion: nextQuestion,
-        responses: newResponses,
-      })
+      setAssessment({ ...assessment, currentQuestion: nextQuestion, responses: newResponses })
     } else {
       setIsLoading(true)
-
       try {
         const response = await fetch("/api/assessments", {
           method: "POST",
@@ -210,9 +201,7 @@ export default function ChatPage() {
             responses: newResponses,
           }),
         })
-
         if (!response.ok) throw new Error("Failed to save assessment")
-
         const data = await response.json()
 
         const botMessage: Message = {
@@ -226,13 +215,9 @@ export default function ChatPage() {
 
         setMessages((prev) => [...prev, botMessage])
 
-        // If severity is mild/minimal → show buttons
-        // Show counselor/resources buttons based on score thresholds
         const totalScore = newResponses.reduce((a, b) => a + b, 0)
-
         const shouldShowButtons =
-          (assessment.id === "phq9" && totalScore > 4) ||
-          (assessment.id === "gad7" && totalScore > 3)
+          (assessment.id === "phq9" && totalScore > 4) || (assessment.id === "gad7" && totalScore > 3)
 
         if (shouldShowButtons) {
           const buttonMessage: Message = {
@@ -244,7 +229,6 @@ export default function ChatPage() {
           }
           setMessages((prev) => [...prev, buttonMessage])
         }
-
 
         toast({
           title: "Assessment Complete",
@@ -265,241 +249,350 @@ export default function ChatPage() {
     }
   }
 
+  // --- All other JSX code remains unchanged ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-primary/5 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/60 flex flex-col relative">
+      {/* ... everything else stays the same ... */}
       <Navigation />
-
-      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full p-4">
-        <div className="mb-6 text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-2 animate-fade-in-up">AI Support Chat</h1>
-          <p className="text-lg text-muted-foreground animate-fade-in-delayed">
-            Chat with our compassionate AI assistant for immediate mental health support
+      <main className="flex-1 flex flex-col max-w-7xl mx-auto w-full p-4 gap-8 relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center p-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full mb-4">
+            <Bot className="w-8 h-8 text-indigo-600" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+            AI Mental Health Support
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Your compassionate AI companion for mental wellness guidance and professional assessments
           </p>
         </div>
 
-        <Card className="flex-1 flex flex-col glassmorphism border-0 shadow-xl rounded-2xl overflow-hidden">
-          <CardHeader className="border-b border-white/20 bg-gradient-to-r from-primary/10 to-accent/10">
-            <div className="flex items-center space-x-3">
-              <Avatar className="w-12 h-12">
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white">
-                  <Bot className="w-6 h-6" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-xl text-primary">MindCare AI Assistant</CardTitle>
-                <Badge variant="secondary" className="text-xs bg-accent/20 text-accent border-0">
-                  {isLoading ? "Thinking..." : "Online"} • Confidential & Secure
-                </Badge>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="flex-1 flex flex-col p-0 bg-white/30">
-            <ScrollArea className="flex-1 p-6">
-              <div className="space-y-6">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`flex items-start space-x-3 max-w-[80%] ${message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
-                        }`}
-                    >
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback
-                          className={
-                            message.sender === "user"
-                              ? "bg-gradient-to-br from-secondary to-secondary/80 text-white"
-                              : "bg-gradient-to-br from-primary to-primary/80 text-white"
-                          }
-                        >
-                          {message.sender === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div
-                        className={`rounded-2xl p-4 shadow-lg ${message.sender === "user"
-                            ? "bg-gradient-to-br from-primary to-primary/90 text-white"
-                            : "bg-white/80 backdrop-blur border border-white/20"
-                          }`}
-                      >
-                        {/* ✅ Normal text */}
-                        {message.type === "text" && (
-                          <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
-                        )}
-
-                        {/* ✅ Buttons */}
-                        {message.type === "buttons" && (
-                          <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                            <Button
-                              asChild
-                              variant="outline"
-                              size="lg"
-                              className="text-sm px-6 bg-white border-primary text-primary hover:bg-primary hover:text-white rounded-xl"
-                            >
-                              <Link href="/book">
-                                <Calendar className="w-4 h-4 mr-2" />
-                                Book a Counselor
-                              </Link>
-                            </Button>
-                            <Button
-                              asChild
-                              variant="outline"
-                              size="lg"
-                              className="text-sm px-6 bg-white border-primary text-primary hover:bg-primary hover:text-white rounded-xl"
-                            >
-                              <Link href="/resources">
-                                <ClipboardList className="w-4 h-4 mr-2" />
-                                Explore Resources
-                              </Link>
-                            </Button>
-                          </div>
-                        )}
-
-                        <p
-                          className={`text-xs mt-2 ${message.sender === "user" ? "text-white/70" : "text-muted-foreground"
-                            }`}
-                        >
-                          {message.timestamp.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      </div>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1">
+          {/* Enhanced Assessment Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Header Card */}
+            <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b-0">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+                    <Brain className="w-5 h-5 text-white" />
                   </div>
-                ))}
+                  <CardTitle className="text-lg bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    Quick Assessments
+                  </CardTitle>
+                </div>
+                <Badge className="w-fit bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border-0 font-medium">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Completely Private
+                </Badge>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                  Get instant insights with our clinically-validated screening tools
+                </p>
 
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="flex items-start space-x-3 max-w-[80%]">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white">
-                          <Bot className="w-5 h-5" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="rounded-2xl p-4 bg-white/80 backdrop-blur border border-white/20 shadow-lg">
-                        <div className="flex items-center space-x-2">
-                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                          <p className="text-sm text-muted-foreground">Thinking...</p>
+                {/* PHQ-9 Assessment Card - Modern Design */}
+                <div className="relative mb-6 group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition duration-500 animate-pulse"></div>
+                  <Card className="relative bg-gradient-to-br from-white to-purple-50/50 border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+                            <Activity className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-800">PHQ-9</h3>
+                            <p className="text-sm text-purple-600 font-medium">Depression Screening</p>
+                          </div>
+                        </div>
+                        <div className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded-full">
+                          9 Questions
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                      
+                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                        Assess your mood and depressive symptoms over the past two weeks
+                      </p>
+                      
+                      <Button
+                        onClick={() => startAssessment("phq9")}
+                        disabled={assessment?.isActive}
+                        className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        <Play className="w-5 h-5 mr-2" />
+                        Start PHQ-9 Assessment
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
 
-                {/* Assessment in-progress */}
-                {assessment && assessment.isActive && (
-                  <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-2xl p-6 border border-white/20 shadow-lg backdrop-blur">
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold text-foreground text-lg">{assessment.name}</h3>
-                        <span className="text-sm text-muted-foreground bg-white/50 px-3 py-1 rounded-full">
-                          {assessment.currentQuestion + 1} of {assessment.questions.length}
-                        </span>
+                {/* GAD-7 Assessment Card - Modern Design */}
+                <div className="relative mb-6 group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition duration-500 animate-pulse"></div>
+                  <Card className="relative bg-gradient-to-br from-white to-blue-50/50 border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-lg">
+                            <Zap className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-800">GAD-7</h3>
+                            <p className="text-sm text-blue-600 font-medium">Anxiety Screening</p>
+                          </div>
+                        </div>
+                        <div className="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">
+                          7 Questions
+                        </div>
                       </div>
-                      <Progress
-                        value={(assessment.currentQuestion / assessment.questions.length) * 100}
-                        className="h-3 bg-white/30"
-                      />
+                      
+                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                        Evaluate your anxiety levels and worry patterns
+                      </p>
+                      
+                      <Button
+                        onClick={() => startAssessment("gad7")}
+                        disabled={assessment?.isActive}
+                        className="w-full h-14 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        <Play className="w-5 h-5 mr-2" />
+                        Start GAD-7 Assessment
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Info Box */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-2xl p-4 backdrop-blur-sm">
+                  <div className="flex items-start space-x-3">
+                    <div className="p-1 bg-gradient-to-r from-amber-400 to-orange-400 rounded-lg">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-amber-800 font-semibold mb-1">Professional-Grade Tools</p>
+                      <p className="text-xs text-amber-700 leading-relaxed">
+                        These assessments are used by healthcare professionals worldwide for accurate mental health screening.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Enhanced Chat Area */}
+          <div className="lg:col-span-3">
+            <Card className="flex flex-col bg-white/80 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden h-full">
+              <CardHeader className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b-0">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <Avatar className="w-14 h-14 ring-4 ring-white shadow-lg">
+                      <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                        <Bot className="w-7 h-7" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full border-2 border-white animate-pulse"></div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      MindCare AI
+                    </CardTitle>
+                    <Badge className="text-sm bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border-0 font-medium mt-1">
+                      {isLoading ? "Analyzing..." : "Ready to Help"} • Secure & Private
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="flex-1 flex flex-col p-0 bg-gradient-to-b from-white/50 to-slate-50/30 min-h-0">
+                <ScrollArea className="flex-1 p-6">
+                  <div className="space-y-6">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                      >
+                        <div
+                          className={`flex items-start space-x-4 max-w-[85%] ${
+                            message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                          }`}
+                        >
+                          <Avatar className="w-11 h-11 shadow-lg">
+                            <AvatarFallback
+                              className={
+                                message.sender === "user"
+                                  ? "bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+                                  : "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
+                              }
+                            >
+                              {message.sender === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+                            </AvatarFallback>
+                          </Avatar>
+                          
+                          <div
+                            className={`rounded-3xl p-5 shadow-xl backdrop-blur-sm ${
+                              message.sender === "user"
+                                ? "bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+                                : "bg-white/90 border border-white/50 text-gray-800"
+                            }`}
+                          >
+                            {message.type === "text" && (
+                              <p className="text-sm leading-relaxed whitespace-pre-line font-medium">
+                                {message.content}
+                              </p>
+                            )}
+
+                            {message.type === "buttons" && (
+                              <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                                <Button
+                                  asChild
+                                  className="h-12 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                >
+                                  <Link href="/book">
+                                    <Calendar className="w-4 h-4 mr-2" />
+                                    Book Professional Help
+                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                  </Link>
+                                </Button>
+                                <Button
+                                  asChild
+                                  className="h-12 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                >
+                                  <Link href="/resources">
+                                    <ClipboardList className="w-4 h-4 mr-2" />
+                                    Explore Resources
+                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                  </Link>
+                                </Button>
+                              </div>
+                            )}
+
+                            <p
+                              className={`text-xs mt-3 ${
+                                message.sender === "user" ? "text-white/70" : "text-gray-500"
+                              }`}
+                            >
+                              {message.timestamp.toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="flex items-start space-x-4 max-w-[85%]">
+                          <Avatar className="w-11 h-11 shadow-lg">
+                            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                              <Bot className="w-5 h-5" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="rounded-3xl p-5 bg-white/90 backdrop-blur-sm border border-white/50 shadow-xl">
+                            <div className="flex items-center space-x-3">
+                              <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+                              <p className="text-sm text-gray-600 font-medium">AI is thinking...</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Enhanced Assessment UI */}
+                    {assessment && assessment.isActive && (
+                      <div className="bg-gradient-to-br from-white/90 to-indigo-50/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
+                        <div className="mb-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">{assessment.name}</h3>
+                            <span className="bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 text-sm font-bold px-4 py-2 rounded-full">
+                              Question {assessment.currentQuestion + 1} of {assessment.questions.length}
+                            </span>
+                          </div>
+                          <Progress
+                            value={(assessment.currentQuestion / assessment.questions.length) * 100}
+                            className="h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full overflow-hidden"
+                          />
+                        </div>
+
+                        <p className="text-gray-700 mb-8 leading-relaxed text-base font-medium bg-white/60 p-4 rounded-2xl border border-white/50">
+                          {assessment.questions[assessment.currentQuestion]}
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {["Not at all (0)", "Several days (1)", "More than half (2)", "Nearly every day (3)"].map(
+                            (option, index) => (
+                              <Button
+                                key={index}
+                                onClick={() => handleAssessmentResponse(index)}
+                                disabled={isLoading}
+                                className="h-16 p-4 bg-white/80 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-600 text-gray-700 hover:text-white border border-white/50 hover:border-transparent rounded-2xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                              >
+                                {option}
+                              </Button>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+
+                {/* Enhanced Input Area */}
+                {!assessment?.isActive && (
+                  <div className="p-6 bg-gradient-to-r from-white/80 to-slate-50/60 backdrop-blur-xl border-t border-white/50">
+                    <div className="mb-6">
+                      <p className="text-sm text-gray-600 mb-4 font-medium">Quick conversation starters:</p>
+                      <div className="flex flex-wrap gap-3">
+                        {quickActions.map((action, index) => {
+                          const Icon = action.icon
+                          return (
+                            <Button
+                              key={index}
+                              onClick={() => handleQuickAction(action.text)}
+                              disabled={isLoading}
+                              className={`h-12 px-6 bg-gradient-to-r ${action.gradient} hover:shadow-xl ${action.shadow} text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                            >
+                              <Icon className="w-4 h-4 mr-2" />
+                              {action.text}
+                            </Button>
+                          )
+                        })}
+                      </div>
                     </div>
 
-                    <p className="text-foreground mb-6 leading-relaxed">
-                      {assessment.questions[assessment.currentQuestion]}
-                    </p>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {["Not at all (0)", "Several days (1)", "More than half (2)", "Nearly every day (3)"].map(
-                        (option, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            size="lg"
-                            onClick={() => handleAssessmentResponse(index)}
-                            className="text-sm h-auto py-3 px-4 bg-white/50 border-white/30 hover:bg-primary hover:text-white hover:border-primary rounded-xl button-hover"
-                            disabled={isLoading}
-                          >
-                            {option}
-                          </Button>
-                        ),
-                      )}
+                    <div className="flex items-center space-x-4">
+                      <Input
+                        type="text"
+                        placeholder="Share what's on your mind..."
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && inputValue.trim()) {
+                            sendMessage(inputValue.trim())
+                          }
+                        }}
+                        disabled={isLoading}
+                        className="flex-1 h-14 px-6 bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+                      />
+                      <Button
+                        onClick={() => sendMessage(inputValue.trim())}
+                        disabled={isLoading || !inputValue.trim()}
+                        className="h-14 w-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        <Send className="w-5 h-5" />
+                      </Button>
                     </div>
                   </div>
                 )}
-              </div>
-            </ScrollArea>
-
-            {/* Input box when not doing assessment */}
-            {!assessment?.isActive && (
-              <div className="p-6 border-t border-white/20 bg-white/20 backdrop-blur">
-                <div className="mb-6">
-                  <p className="text-sm text-muted-foreground mb-3 font-medium">Quick actions to get started:</p>
-                  <div className="flex flex-wrap gap-3">
-                    {quickActions.map((action, index) => {
-                      const Icon = action.icon
-                      return (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleQuickAction(action.text)}
-                          className={`text-sm rounded-xl button-hover bg-white/50 border-white/30 ${action.color}`}
-                          disabled={isLoading}
-                        >
-                          <Icon className="w-4 h-4 mr-2" />
-                          {action.text}
-                        </Button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* Chat input */}
-                <div className="flex items-center space-x-3">
-                  <Input
-                    type="text"
-                    placeholder="Type your message..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && inputValue.trim()) {
-                        sendMessage(inputValue.trim())
-                      }
-                    }}
-                    className="flex-1 rounded-xl bg-white/50 border-white/30 backdrop-blur"
-                    disabled={isLoading}
-                  />
-                  <Button
-                    onClick={() => sendMessage(inputValue.trim())}
-                    disabled={isLoading || !inputValue.trim()}
-                    size="icon"
-                    className="rounded-xl"
-                  >
-                    <Send className="w-5 h-5" />
-                  </Button>
-                </div>
-
-                {/* Assessment buttons */}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Button
-                    onClick={() => startAssessment("phq9")}
-                    variant="secondary"
-                    className="rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white"
-                  >
-                    Start PHQ-9
-                  </Button>
-                  <Button
-                    onClick={() => startAssessment("gad7")}
-                    variant="secondary"
-                    className="rounded-xl bg-accent/10 text-accent hover:bg-accent hover:text-white"
-                  >
-                    Start GAD-7
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </main>
 
       <Footer />

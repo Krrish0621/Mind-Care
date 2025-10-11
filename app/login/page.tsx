@@ -3,19 +3,23 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { authenticateUser } from "@/lib/auth"
-import { User, Lock, Shield } from "lucide-react"
-import { motion } from "framer-motion"
+import { User, Lock, Shield, Eye, EyeOff, Sparkles, Brain, Heart, ArrowRight, LogIn, CheckCircle, AlertCircle } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [role, setRole] = useState<"student" | "admin">("student")
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const router = useRouter()
 
   useEffect(() => {
-    const role = localStorage.getItem("role")
-    if (role) {
-      if (role === "admin") {
+    const storedRole = localStorage.getItem("role")
+    if (storedRole) {
+      if (storedRole === "admin") {
         router.push("/admin")
       } else {
         router.push("/")
@@ -23,14 +27,27 @@ export default function LoginPage() {
     }
   }, [router])
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
+    setError("")
+
+    // Simulate loading for better UX
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     const isValid = authenticateUser(role, username, password)
 
     if (isValid) {
       localStorage.setItem("role", role)
 
-      // Attempt to play background music
       const audio = document.querySelector("audio") as HTMLAudioElement | null
       if (audio) {
         audio.volume = 0.4
@@ -40,7 +57,6 @@ export default function LoginPage() {
           .catch((err) => console.warn("Autoplay blocked:", err))
       }
 
-      // Navigate after short delay for smoother audio start
       setTimeout(() => {
         if (role === "admin") {
           router.push("/admin")
@@ -49,136 +65,296 @@ export default function LoginPage() {
         }
       }, 300)
     } else {
-      alert("Invalid credentials")
+      setError("Invalid credentials. Please try again.")
     }
+    
+    setIsLoading(false)
   }
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
-      {/* Enhanced Animated Wave Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg
-          className="absolute bottom-0 w-full h-48 animate-wave-slow"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="#7c3aed"
-            fillOpacity="0.3"
-            d="M0,288L48,272C96,256,192,224,288,213.3C384,203,480,213,576,224C672,235,768,245,864,229.3C960,213,1056,171,1152,165.3C1248,160,1344,192,1392,208L1440,224L1440,320L0,320Z"
-          ></path>
-        </svg>
-        <svg
-          className="absolute bottom-0 w-full h-48 animate-wave-fast opacity-70"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="#c084fc"
-            fillOpacity="0.25"
-            d="M0,224L48,218.7C96,213,192,203,288,208C384,213,480,235,576,224C672,213,768,171,864,154.7C960,139,1056,149,1152,176C1248,203,1344,245,1392,266.7L1440,288L1440,320L0,320Z"
-          ></path>
-        </svg>
+    <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900">
+      {/* Mouse follower - Fixed z-index */}
+      <div 
+        className="fixed pointer-events-none z-10 w-6 h-6 bg-gradient-to-r from-purple-400/30 to-pink-400/30 rounded-full blur-sm transition-all duration-300 ease-out"
+        style={{
+          left: mousePosition.x - 12,
+          top: mousePosition.y - 12,
+        }}
+      />
+
+      {/* Background Elements - Fixed z-index to stay in background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Animated gradients */}
+        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-indigo-400/10 to-purple-400/10 rounded-full blur-3xl animate-spin-slow"></div>
+
+        {/* Floating elements - Fixed positioning to avoid overlap */}
+        <div className="absolute top-20 left-20 animate-float hidden xl:block">
+          <div className="w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center">
+            <Brain className="w-6 h-6 text-purple-300" />
+          </div>
+        </div>
+        <div className="absolute top-32 right-32 animate-float-delayed hidden xl:block">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl backdrop-blur-sm border border-white/10 flex items-center justify-center">
+            <Heart className="w-5 h-5 text-blue-300" />
+          </div>
+        </div>
+        <div className="absolute bottom-32 left-32 animate-bounce-slow hidden xl:block">
+          <div className="w-6 h-6 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full"></div>
+        </div>
+        <div className="absolute bottom-20 right-80 animate-float hidden xl:block">
+          <div className="w-8 h-8 bg-gradient-to-r from-yellow-500/30 to-orange-500/30 rounded-full"></div>
+        </div>
       </div>
 
-      {/* Login Card */}
-      <motion.form
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.75, ease: "easeOut" }}
-        onSubmit={handleLogin}
-        className="relative z-10 bg-white/90 backdrop-blur-xl p-10 rounded-3xl shadow-2xl w-full max-w-sm border border-purple-300"
+      {/* Left Side - Welcome Section - Proper z-index */}
+      <motion.div 
+        initial={{ opacity: 0, x: -100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-16 relative z-20"
       >
-        <motion.h2
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-4xl font-extrabold text-purple-700 mb-8 text-center tracking-wide"
-        >
-          Mind-Care Login 💜
-        </motion.h2>
-
-        {/* Role Selection */}
-        <label className="block mb-6">
-          <span className="text-sm font-semibold text-purple-700">Role</span>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as "admin" | "student")}
-            className="w-full mt-2 p-3 border rounded-xl bg-purple-50 focus:outline-none focus:ring-4 focus:ring-purple-300 transition"
-          >
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-          </select>
-        </label>
-
-        {/* Username */}
-        <label className="block mb-6">
-          <span className="text-sm font-semibold text-purple-700">Username</span>
-          <div className="flex items-center mt-2 bg-white rounded-xl border border-purple-300 px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-purple-400 transition">
-            <User className="w-5 h-5 text-purple-400" />
-            <input
-              type="text"
-              className="w-full ml-3 p-2 text-purple-700 placeholder-purple-300 focus:outline-none"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="Enter your username"
-            />
+        <div className="max-w-md">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="relative">
+              <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/50 to-pink-500/50 rounded-2xl blur-lg"></div>
+              <div className="relative w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <Brain className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                MindCare
+              </h1>
+              <p className="text-purple-200 font-medium">Your Mental Wellness Partner</p>
+            </div>
           </div>
-        </label>
 
-        {/* Password */}
-        <label className="block mb-8">
-          <span className="text-sm font-semibold text-purple-700">Password</span>
-          <div className="flex items-center mt-2 bg-white rounded-xl border border-purple-300 px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-purple-400 transition">
-            <Lock className="w-5 h-5 text-purple-400" />
-            <input
-              type="password"
-              className="w-full ml-3 p-2 text-purple-700 placeholder-purple-300 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter your password"
-            />
+          <h2 className="text-5xl font-bold text-white mb-6 leading-tight">
+            Welcome Back to Your
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Mental Health Journey</span>
+          </h2>
+
+          <p className="text-slate-300 text-lg leading-relaxed mb-8">
+            Continue your path to wellness with our AI-powered support, professional counseling, and caring community.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+              <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center mb-2">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white font-semibold">24/7 AI Support</p>
+              <p className="text-slate-300 text-sm">Always here when you need us</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center mb-2">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white font-semibold">100% Secure</p>
+              <p className="text-slate-300 text-sm">Your privacy is protected</p>
+            </div>
           </div>
-        </label>
+        </div>
+      </motion.div>
 
-        {/* Submit Button */}
-        <motion.button
-          whileHover={{ scale: 1.07, boxShadow: "0 0 15px rgba(124, 58, 237, 0.6)" }}
-          whileTap={{ scale: 0.95 }}
-          type="submit"
-          className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold shadow-lg drop-shadow-lg transition-all duration-300"
+      {/* Right Side - Login Form - Higher z-index */}
+      <div className="flex-1 flex items-center justify-center px-8 lg:px-16 relative z-30">
+        <motion.div
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="w-full max-w-md"
         >
-          Login
-        </motion.button>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 p-8 lg:p-10 relative">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-center mb-8"
+            >
+              <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full mb-4 border border-purple-300/30">
+                <Sparkles className="w-6 h-6 text-purple-300" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Sign In</h2>
+              <p className="text-slate-300">Welcome back to MindCare</p>
+            </motion.div>
 
-        {/* Credentials info */}
-        <p className="mt-8 text-center text-sm text-purple-600 select-none">
-          <Shield className="inline w-5 h-5 mr-2 text-purple-500 align-middle" />
-          Default credentials: <br />
-          <span className="font-semibold">Admin:</span> admin / admin123 <br />
-          <span className="font-semibold">Student:</span> student / student123
-        </p>
-      </motion.form>
+            <form onSubmit={handleLogin} className="space-y-6">
+              {/* Role Selection */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
+                <label className="block text-sm font-semibold text-white mb-2">Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as "admin" | "student")}
+                  className="w-full p-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                >
+                  <option value="student" className="text-gray-800">Student</option>
+                  <option value="admin" className="text-gray-800">Admin</option>
+                </select>
+              </motion.div>
 
-      {/* Wave Animation Styles */}
+              {/* Username */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+              >
+                <label className="block text-sm font-semibold text-white mb-2">Username</label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <User className="w-5 h-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full p-4 pl-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your username"
+                    required
+                  />
+                </div>
+              </motion.div>
+
+              {/* Password */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
+                <label className="block text-sm font-semibold text-white mb-2">Password</label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <Lock className="w-5 h-5 text-slate-400" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-4 pl-12 pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors duration-200"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Error Message */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex items-center space-x-2 bg-red-500/20 border border-red-400/30 rounded-xl p-3"
+                  >
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                    <p className="text-red-300 text-sm">{error}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Submit Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.5 }}
+              >
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="relative w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                  <div className="relative flex items-center justify-center space-x-2">
+                    {isLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Signing In...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="w-5 h-5" />
+                        <span>Sign In</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </>
+                    )}
+                  </div>
+                </button>
+              </motion.div>
+            </form>
+
+            {/* Credentials Info */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.1, duration: 0.5 }}
+              className="mt-8 p-4 bg-blue-500/10 border border-blue-400/30 rounded-2xl backdrop-blur-sm"
+            >
+              <div className="flex items-start space-x-3">
+                <Shield className="w-5 h-5 text-blue-300 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <p className="text-blue-200 font-semibold mb-2">Demo Credentials:</p>
+                  <div className="space-y-1 text-slate-300">
+                    <p><span className="font-medium text-white">Admin:</span> admin / admin123</p>
+                    <p><span className="font-medium text-white">Student:</span> student / student123</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Mobile Logo */}
+            <div className="lg:hidden mt-8 text-center">
+              <div className="inline-flex items-center space-x-2">
+                <Brain className="w-6 h-6 text-purple-300" />
+                <span className="text-white font-bold text-lg">MindCare</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Styles */}
       <style jsx>{`
-        .animate-wave-slow {
-          animation: wave 12s infinite linear;
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(3deg); }
         }
-        .animate-wave-fast {
-          animation: wave 8s infinite linear reverse;
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(-2deg); }
         }
-        @keyframes wave {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes spin-slow {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+          animation: float-delayed 4s ease-in-out infinite;
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 3s ease-in-out infinite;
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
         }
       `}</style>
     </div>
