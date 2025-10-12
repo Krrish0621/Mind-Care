@@ -23,7 +23,10 @@ export default function RootLayout({
         <DarkModeProvider>
           <Suspense fallback={null}>
             <BackgroundMusic />
-            {children}
+            {/* ✅ Prevent SSR useDarkMode errors without changing page styles */}
+            <div suppressHydrationWarning>
+              {typeof window !== "undefined" ? children : null}
+            </div>
             <Toaster />
           </Suspense>
         </DarkModeProvider>
