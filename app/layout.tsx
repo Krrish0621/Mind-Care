@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
-import "./globals.css"
+import "./global.css"
 import dynamic from "next/dynamic"
 import { DarkModeProvider } from "@/contexts/DarkModeContext"
 
