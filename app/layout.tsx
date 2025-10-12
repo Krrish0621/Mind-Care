@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import type { Metadata } from "next"
 import { Toaster } from "@/components/ui/toaster"
@@ -8,11 +6,7 @@ import "./globals.css"
 import dynamic from "next/dynamic"
 import { DarkModeProvider } from "@/contexts/DarkModeContext"
 
-// ✅ Lazy-load BackgroundMusic so it doesn’t break SSR
-const BackgroundMusic = dynamic(() => import("@/components/background"), {
-  ssr: false,
-})
-
+// ✅ Define metadata here — stays server-side
 export const metadata: Metadata = {
   title: "MindCare - Mental Health Support Platform",
   description:
@@ -20,6 +14,12 @@ export const metadata: Metadata = {
   generator: "Node.js",
 }
 
+// ✅ Dynamically import client-only components
+const BackgroundMusic = dynamic(() => import("@/components/background"), {
+  ssr: false,
+})
+
+// ✅ Use client-side logic safely *inside the body*, not the root
 export default function RootLayout({
   children,
 }: {
@@ -30,9 +30,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground transition-colors duration-300">
         <DarkModeProvider>
           <Suspense fallback={<div />}>
-            {/* ✅ Music only loads client-side */}
             <BackgroundMusic />
-            {/* ✅ All pages load normally */}
             {children}
             <Toaster />
           </Suspense>
