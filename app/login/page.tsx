@@ -2,10 +2,222 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { authenticateUser } from "@/lib/auth"
-import { User, Lock, Shield, Eye, EyeOff, Sparkles, Brain, Heart, ArrowRight, LogIn, CheckCircle, AlertCircle } from "lucide-react"
+import { authenticateUser, registerUser } from "@/lib/auth"
+import { User, Lock, Shield, Eye, EyeOff, Sparkles, Brain, Heart, ArrowRight, LogIn, CheckCircle, AlertCircle, PlusCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
+// TypeScript interfaces
+interface RegisterDialogProps {
+  open: boolean
+  onClose: () => void
+  onRegister: (data: { username: string }) => void
+}
+
+interface RegisterData {
+  name: string
+  email: string
+  password: string
+}
+
+interface RegisterResult {
+  success: boolean
+  error?: string
+}
+
+// Register Modal Component
+function RegisterDialog({ open, onClose, onRegister }: RegisterDialogProps) {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError("")
+
+    // Basic validation
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError("All fields are required")
+      setIsLoading(false)
+      return
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email")
+      setIsLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters")
+      setIsLoading(false)
+      return
+    }
+
+    // Simulate loading
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const regResult: RegisterResult = await registerUser({ name, email, password })
+    
+    if (regResult.success) {
+      onRegister({ username: email })
+      setName("")
+      setEmail("")
+      setPassword("")
+      setShowPassword(false)
+      setError("")
+      onClose()
+    } else {
+      setError(regResult.error || "Registration failed. Please try again.")
+    }
+    setIsLoading(false)
+  }
+
+  if (!open) return null
+
+  return (
+    <AnimatePresence>
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0, y: 40 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 40 }}
+          transition={{ type: "spring", duration: 0.3 }}
+          className="bg-white/10 border border-white/20 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 w-full max-w-md relative"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors duration-200 flex items-center justify-center text-xl font-light"
+            type="button"
+          >
+            ×
+          </button>
+          
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full mb-4 border border-purple-300/30">
+              <PlusCircle className="w-6 h-6 text-purple-300" />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+            <p className="text-slate-300">Join MindCare today</p>
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">Full Name</label>
+              <div className="relative">
+                <User className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full p-4 pl-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">Email</label>
+              <div className="relative">
+                <User className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-4 pl-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">Password</label>
+              <div className="relative">
+                <Lock className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 pl-12 pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
+                  placeholder="Create a password (min 6 chars)"
+                  required
+                  minLength={6}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors duration-200"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center space-x-2 bg-red-500/20 border border-red-400/30 rounded-xl p-3"
+                >
+                  <AlertCircle className="w-5 h-5 text-red-400" />
+                  <p className="text-red-300 text-sm">{error}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="relative w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <div className="relative flex items-center justify-center space-x-2">
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Creating Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="w-5 h-5" />
+                    <span>Create Account</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </>
+                )}
+              </div>
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-slate-400 hover:text-white transition-colors duration-200 text-sm"
+            >
+              Already have an account? Sign in
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+// Main Login Page Component
 export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -14,6 +226,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [showRegister, setShowRegister] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -71,9 +284,26 @@ export default function LoginPage() {
     setIsLoading(false)
   }
 
+  const handleRegisterSuccess = (data: { username: string }) => {
+    localStorage.setItem("role", "student")
+    localStorage.setItem("username", data.username)
+    setShowRegister(false)
+    
+    // Play audio if available
+    const audio = document.querySelector("audio") as HTMLAudioElement | null
+    if (audio) {
+      audio.volume = 0.4
+      audio.play().catch(() => {})
+    }
+    
+    setTimeout(() => {
+      router.push("/")
+    }, 300)
+  }
+
   return (
     <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900">
-      {/* Mouse follower - Fixed z-index */}
+      {/* Mouse follower */}
       <div 
         className="fixed pointer-events-none z-10 w-6 h-6 bg-gradient-to-r from-purple-400/30 to-pink-400/30 rounded-full blur-sm transition-all duration-300 ease-out"
         style={{
@@ -82,14 +312,13 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Background Elements - Fixed z-index to stay in background */}
+      {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Animated gradients */}
         <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-indigo-400/10 to-purple-400/10 rounded-full blur-3xl animate-spin-slow"></div>
 
-        {/* Floating elements - Fixed positioning to avoid overlap */}
+        {/* Floating elements */}
         <div className="absolute top-20 left-20 animate-float hidden xl:block">
           <div className="w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center">
             <Brain className="w-6 h-6 text-purple-300" />
@@ -108,7 +337,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Left Side - Welcome Section - Proper z-index */}
+      {/* Left Side - Welcome Section */}
       <motion.div 
         initial={{ opacity: 0, x: -100 }}
         animate={{ opacity: 1, x: 0 }}
@@ -159,7 +388,7 @@ export default function LoginPage() {
         </div>
       </motion.div>
 
-      {/* Right Side - Login Form - Higher z-index */}
+      {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center px-8 lg:px-16 relative z-30">
         <motion.div
           initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -296,6 +525,23 @@ export default function LoginPage() {
               </motion.div>
             </form>
 
+            {/* Register Button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.0, duration: 0.5 }}
+              className="mt-6 text-center"
+            >
+              <button
+                type="button"
+                onClick={() => setShowRegister(true)}
+                className="inline-flex items-center space-x-2 text-purple-300 hover:text-purple-200 bg-white/5 hover:bg-white/10 border border-purple-300/30 hover:border-purple-300/50 px-6 py-3 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105"
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span>New user? Create Account</span>
+              </button>
+            </motion.div>
+
             {/* Credentials Info */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -325,6 +571,13 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Register Dialog */}
+      <RegisterDialog 
+        open={showRegister} 
+        onClose={() => setShowRegister(false)} 
+        onRegister={handleRegisterSuccess} 
+      />
 
       {/* Styles */}
       <style jsx>{`
