@@ -1,41 +1,66 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Toaster } from "@/components/ui/toaster"
-import { Suspense } from "react"
-import dynamic from "next/dynamic"
-import "@/app/globals.css"
-import { DarkModeProvider } from "@/contexts/DarkModeContext"
+// contexts/DarkModeContext.tsx
+"use client"
 
-// ✅ Server-safe metadata
-export const metadata: Metadata = {
-  title: "MindCare - Mental Health Support Platform",
-  description:
-    "Your trusted digital mental health support platform with AI chat, counselor booking, and peer support.",
-  generator: "Node.js",
+import React, { createContext, useContext, useEffect, useState } from 'react'
+
+interface DarkModeContextType {
+  isDarkMode: boolean
+  toggleDarkMode: () => void
 }
 
-// ✅ Dynamic import for client-only background
-const BackgroundMusic = dynamic(() => import("@/components/background"), {
-  ssr: false,
-})
+const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined)
 
-export default function RootLayout({
-  children,
-}: {
+export const useDarkMode = () => {
+  const context = useContext(DarkModeContext)
+  if (context === undefined) {
+    throw new Error('useDarkMode must be used within a DarkModeProvider')
+  }
+  return context
+}
+
+interface DarkModeProviderProps {
   children: React.ReactNode
-}) {
+}
+
+export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Check for saved theme preference or default to light mode
+  useEffect(() => {
+    setMounted(true)
+    const savedTheme = localStorage.getItem('darkMode')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    
+    if (savedTheme === 'true' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark')
+    } else {
+      setIsDarkMode(false)
+      document.documentElement.classList.remove('dark')
+    }
+  }, [])
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode
+    setIsDarkMode(newDarkMode)
+    localStorage.setItem('darkMode', newDarkMode.toString())
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return <div style={{ visibility: 'hidden' }}>{children}</div>
+  }
+
   return (
-    // ✅ Provider moved to <html> level to cover all routes (even SSR)
-    <html lang="en" suppressHydrationWarning>
-      <DarkModeProvider>
-        <body className="font-sans antialiased bg-background text-foreground transition-colors duration-300">
-          <Suspense fallback={<div />}>
-            <BackgroundMusic />
-            {children}
-            <Toaster />
-          </Suspense>
-        </body>
-      </DarkModeProvider>
-    </html>
+    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+      {children}
+    </DarkModeContext.Provider>
   )
 }
