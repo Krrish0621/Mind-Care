@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 import "./globals.css"
 import BackgroundMusic from "@/components/background"
+import { DarkModeProvider } from "@/contexts/DarkModeContext" // <-- import the provider
 
 export const metadata: Metadata = {
   title: "MindCare - Mental Health Support Platform",
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <Suspense fallback={null}>
-          <BackgroundMusic />
-          {children}
-          <Toaster />
+          <DarkModeProvider>  {/* Wrap children within provider */}
+            <BackgroundMusic />
+            {children}
+            <Toaster />
+          </DarkModeProvider>
         </Suspense>
       </body>
     </html>

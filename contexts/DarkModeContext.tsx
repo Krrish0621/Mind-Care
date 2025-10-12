@@ -1,4 +1,3 @@
-// contexts/DarkModeContext.tsx
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
@@ -26,18 +25,29 @@ export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) 
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Check for saved theme preference or default to light mode
   useEffect(() => {
     setMounted(true)
+
+    // Detect if dark mode class is already set from hardcoded place:
+    const html = document.documentElement
+    const hardcodedDark = html.classList.contains('dark')
+
     const savedTheme = localStorage.getItem('darkMode')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme === 'true' || (!savedTheme && prefersDark)) {
+
+    // If hardcoded dark mode is present, prioritize that and sync state
+    if (hardcodedDark) {
       setIsDarkMode(true)
-      document.documentElement.classList.add('dark')
+      // Do NOT add or remove class, since it's hardcoded and must stay
     } else {
-      setIsDarkMode(false)
-      document.documentElement.classList.remove('dark')
+      // Otherwise apply dark mode following saved setting or prefers-color-scheme
+      if (savedTheme === 'true' || (!savedTheme && prefersDark)) {
+        setIsDarkMode(true)
+        html.classList.add('dark')
+      } else {
+        setIsDarkMode(false)
+        html.classList.remove('dark')
+      }
     }
   }, [])
 
@@ -45,11 +55,16 @@ export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) 
     const newDarkMode = !isDarkMode
     setIsDarkMode(newDarkMode)
     localStorage.setItem('darkMode', newDarkMode.toString())
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
+
+    const html = document.documentElement
+
+    // Only toggle class if not hardcoded
+    if (!html.classList.contains('dark') || !newDarkMode) {
+      if (newDarkMode) {
+        html.classList.add('dark')
+      } else {
+        html.classList.remove('dark')
+      }
     }
   }
 
