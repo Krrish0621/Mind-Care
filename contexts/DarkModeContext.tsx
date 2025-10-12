@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 import dynamic from "next/dynamic"
-import "./global.css"
+import "@/app/globals.css"
 import { DarkModeProvider } from "@/contexts/DarkModeContext"
 
 // ✅ Server-safe metadata
