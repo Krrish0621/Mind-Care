@@ -118,8 +118,319 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Smooth transitions for theme switching */
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
   }
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Enhanced scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: calc(var(--radius) / 2);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: calc(var(--radius) / 2);
+    transition: background-color 0.2s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-foreground);
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: var(--muted);
+  }
+  
+  /* Firefox scrollbar styling */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+  }
+  
+  /* Enhanced selection styling */
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  
+  /* Dark mode color scheme */
+  .dark {
+    color-scheme: dark;
+  }
+  
+  /* Enhanced focus visibility */
+  *:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: calc(var(--radius) / 2);
+  }
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--primary), 0 0 30px var(--primary);
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.5s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Enhanced glassmorphism effect */
+.glassmorphism {
+  background: color-mix(in oklch, var(--background) 70%, transparent);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
+  box-shadow: 
+    0 8px 32px color-mix(in oklch, var(--foreground) 10%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 20%, transparent);
+}
+
+/* Enhanced card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px color-mix(in oklch, var(--foreground) 15%, transparent);
+}
+
+/* Enhanced button hover effects */
+.button-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.button-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+.button-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--primary-foreground) 20%, transparent),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.button-hover:hover::before {
+  left: 100%;
+}
+
+/* Enhanced gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    var(--background),
+    color-mix(in oklch, var(--primary) 5%, var(--background)),
+    color-mix(in oklch, var(--secondary) 5%, var(--background))
+  );
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Enhanced shadow utilities */
+.shadow-glow {
+  box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+.shadow-soft {
+  box-shadow: 0 2px 20px color-mix(in oklch, var(--foreground) 8%, transparent);
+}
+
+.shadow-medium {
+  box-shadow: 0 4px 30px color-mix(in oklch, var(--foreground) 12%, transparent);
+}
+
+.shadow-strong {
+  box-shadow: 0 8px 40px color-mix(in oklch, var(--foreground) 20%, transparent);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--muted);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced text utilities */
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--chart-1),
+    var(--chart-2)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Improved image handling in dark mode */
+.dark img:not([src*=".svg"]):not(.no-dark-filter) {
+  filter: brightness(0.9) contrast(1.05);
+}
+
+/* Enhanced backdrop blur */
+.backdrop-blur-enhanced {
+  backdrop-filter: blur(16px) saturate(180%) brightness(1.1);
+}
+
+/* Better border gradients */
+.border-gradient {
+  border: 1px solid;
+  border-image: linear-gradient(
+    45deg,
+    var(--border),
+    color-mix(in oklch, var(--primary) 30%, var(--border))
+  ) 1;
+  border-radius: var(--radius);
+}
+
+/* Enhanced tooltip styling */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-medium);
+  border: 1px solid var(--border);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
 }

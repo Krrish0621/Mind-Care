@@ -1,3 +1,4 @@
+// components/Navigation.tsx
 "use client"
 
 import Link from "next/link"
@@ -23,9 +24,12 @@ import {
   Sparkles,
   Heart,
   Brain,
+  Moon,
+  Sun,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useDarkMode } from "@/contexts/DarkModeContext"
 
 const allNavigation = [
   { name: "Home", href: "/", icon: Home, color: "text-indigo-500", activeColor: "from-indigo-500 to-purple-600" },
@@ -46,6 +50,7 @@ export function Navigation() {
   const [role, setRole] = useState<string | null>(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { isDarkMode, toggleDarkMode } = useDarkMode()
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role")
@@ -75,8 +80,8 @@ export function Navigation() {
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-xl shadow-gray-900/5"
-          : "bg-white/95 backdrop-blur-lg border-b border-gray-200/30"
+          ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-xl shadow-gray-900/5 dark:shadow-black/20"
+          : "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200/30 dark:border-gray-700/30"
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -101,7 +106,7 @@ export function Navigation() {
                 </span>
                 <div className="flex items-center space-x-1">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-gray-500 font-medium">Online</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Online</span>
                 </div>
               </div>
             </Link>
@@ -125,7 +130,7 @@ export function Navigation() {
                       "group relative flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105",
                       isActive
                         ? "text-white shadow-lg shadow-indigo-500/25"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                     )}
                   >
                     {isActive && (
@@ -154,15 +159,50 @@ export function Navigation() {
 
           {/* Right Side - Enhanced */}
           <div className="flex items-center space-x-3">
+            {/* Dark Mode Toggle Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleDarkMode}
+              className="relative p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-2xl transition-all duration-300 group overflow-hidden"
+              aria-label="Toggle dark mode"
+            >
+              <div className="relative z-10">
+                <AnimatePresence mode="wait">
+                  {isDarkMode ? (
+                    <motion.div
+                      key="sun"
+                      initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <Sun className="w-5 h-5 text-yellow-500 group-hover:text-yellow-400" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="moon"
+                      initial={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-indigo-600" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.button>
+
             {/* Notifications - Desktop only */}
             <div className="hidden md:flex items-center space-x-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-2.5 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-colors duration-300 group"
+                className="relative p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-2xl transition-colors duration-300 group"
               >
-                <Bell className="w-5 h-5 text-gray-600 group-hover:text-indigo-600 transition-colors duration-300" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></div>
               </motion.button>
             </div>
 
@@ -172,16 +212,16 @@ export function Navigation() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md"
+                className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-900 capitalize">{role || 'User'}</p>
-                  <p className="text-xs text-gray-500">Welcome back!</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white capitalize">{role || 'User'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Welcome back!</p>
                 </div>
-                <ChevronDown className={cn("w-4 h-4 text-gray-600 transition-transform duration-300", userMenuOpen && "rotate-180")} />
+                <ChevronDown className={cn("w-4 h-4 text-gray-600 dark:text-gray-300 transition-transform duration-300", userMenuOpen && "rotate-180")} />
               </motion.button>
 
               {/* User Dropdown */}
@@ -192,35 +232,35 @@ export function Navigation() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-200/60 py-2 z-50"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 py-2 z-50"
                   >
-                    <div className="px-4 py-3 border-b border-gray-100">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                           <User className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 capitalize">{role || 'User'}</p>
-                          <p className="text-sm text-gray-500">Premium Member</p>
+                          <p className="font-semibold text-gray-900 dark:text-white capitalize">{role || 'User'}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Premium Member</p>
                         </div>
                       </div>
                     </div>
                     
                     <div className="py-2">
-                      <button className="flex items-center space-x-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                      <button className="flex items-center space-x-3 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                         <Settings className="w-4 h-4" />
                         <span className="font-medium">Settings</span>
                       </button>
-                      <button className="flex items-center space-x-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                      <button className="flex items-center space-x-3 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                         <Shield className="w-4 h-4" />
                         <span className="font-medium">Privacy</span>
                       </button>
                     </div>
                     
-                    <div className="border-t border-gray-100 pt-2">
+                    <div className="border-t border-gray-100 dark:border-gray-700 pt-2">
                       <button
                         onClick={handleLogout}
-                        className="flex items-center space-x-3 w-full px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200"
+                        className="flex items-center space-x-3 w-full px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
                       >
                         <LogOut className="w-4 h-4" />
                         <span className="font-medium">Sign Out</span>
@@ -237,7 +277,7 @@ export function Navigation() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2.5 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-colors duration-300"
+                className="p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-2xl transition-colors duration-300"
               >
                 <AnimatePresence mode="wait">
                   {mobileMenuOpen ? (
@@ -248,7 +288,7 @@ export function Navigation() {
                       exit={{ rotate: 90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <X className="w-6 h-6 text-gray-600" />
+                      <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -258,7 +298,7 @@ export function Navigation() {
                       exit={{ rotate: -90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Menu className="w-6 h-6 text-gray-600" />
+                      <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -277,7 +317,7 @@ export function Navigation() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="lg:hidden overflow-hidden"
             >
-              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-gray-50 to-white rounded-2xl mx-2 mb-4 border border-gray-200/50">
+              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl mx-2 mb-4 border border-gray-200/50 dark:border-gray-700/50">
                 {filteredNavigation.map((item, index) => {
                   const Icon = item.icon
                   const isActive = pathname === item.href
@@ -294,7 +334,7 @@ export function Navigation() {
                           "group flex items-center space-x-3 px-4 py-3 rounded-2xl text-base font-semibold transition-all duration-300",
                           isActive
                             ? `bg-gradient-to-r ${item.activeColor} text-white shadow-lg`
-                            : "text-gray-700 hover:bg-gray-100"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         )}
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -312,19 +352,56 @@ export function Navigation() {
                   )
                 })}
 
-                <div className="pt-4 mt-4 border-t border-gray-200">
+                {/* Mobile Dark Mode Toggle */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: filteredNavigation.length * 0.1, duration: 0.3 }}
+                >
+                  <button
+                    onClick={toggleDarkMode}
+                    className="group flex items-center space-x-3 px-4 py-3 rounded-2xl text-base font-semibold transition-all duration-300 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+                  >
+                    <AnimatePresence mode="wait">
+                      {isDarkMode ? (
+                        <motion.div
+                          key="sun"
+                          initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                          exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Sun className="w-5 h-5 text-yellow-500" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="moon"
+                          initial={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                          exit={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+                </motion.div>
+
+                <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: filteredNavigation.length * 0.1, duration: 0.3 }}
+                    transition={{ delay: (filteredNavigation.length + 1) * 0.1, duration: 0.3 }}
                   >
-                    <div className="flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl mb-3">
+                    <div className="flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl mb-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 capitalize">{role || 'User'}</p>
-                        <p className="text-xs text-gray-600">Premium Member</p>
+                        <p className="font-semibold text-gray-900 dark:text-white capitalize">{role || 'User'}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Premium Member</p>
                       </div>
                     </div>
                     
@@ -333,7 +410,7 @@ export function Navigation() {
                         setMobileMenuOpen(false)
                         handleLogout()
                       }}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-300 font-medium"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all duration-300 font-medium"
                     >
                       <LogOut className="w-5 h-5" />
                       <span>Sign Out</span>

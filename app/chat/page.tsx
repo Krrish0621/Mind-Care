@@ -1,37 +1,39 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { useToast } from "@/hooks/use-toast"
-import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2, Calendar, Brain, Activity, Sparkles, Shield, CheckCircle, Play, ChevronRight } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { Send, Bot, User, Heart, Moon, Zap, ClipboardList, Loader2, Calendar, Brain, Activity, Sparkles, Shield, CheckCircle, Play, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface Message {
-  id: string
-  content: string
-  sender: "user" | "bot"
-  timestamp: Date
-  type?: "text" | "buttons"
+  id: string;
+  content: string;
+  sender: "user" | "bot";
+  timestamp: Date;
+  type?: "text" | "buttons";
 }
 
 interface Assessment {
-  id: string
-  name: string
-  questions: string[]
-  currentQuestion: number
-  responses: number[]
-  isActive: boolean
+  id: string;
+  name: string;
+  questions: string[];
+  currentQuestion: number;
+  responses: number[];
+  isActive: boolean;
 }
 
 export default function ChatPage() {
+  const { isDarkMode } = useDarkMode();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -41,30 +43,30 @@ export default function ChatPage() {
       timestamp: new Date(),
       type: "text",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [assessment, setAssessment] = useState<Assessment | null>(null)
-  const [userToken, setUserToken] = useState<string>("")
-  const [sessionId, setSessionId] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [userToken, setUserToken] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken") || `anon_${Math.random().toString(36).substr(2, 9)}`
-    const session = localStorage.getItem("sessionId") || `session_${Date.now()}`
+    const token = localStorage.getItem("userToken") || `anon_${Math.random().toString(36).substr(2, 9)}`;
+    const session = localStorage.getItem("sessionId") || `session_${Date.now()}`;
 
-    localStorage.setItem("userToken", token)
-    localStorage.setItem("sessionId", session)
+    localStorage.setItem("userToken", token);
+    localStorage.setItem("sessionId", session);
 
-    setUserToken(token)
-    setSessionId(session)
-  }, [])
+    setUserToken(token);
+    setSessionId(session);
+  }, []);
 
   const quickActions = [
     { text: "I feel anxious", icon: Zap, gradient: "from-orange-400 to-pink-500", shadow: "shadow-orange-500/25" },
     { text: "I can't sleep", icon: Moon, gradient: "from-indigo-500 to-purple-600", shadow: "shadow-indigo-500/25" },
     { text: "I'm overwhelmed", icon: Heart, gradient: "from-pink-500 to-rose-600", shadow: "shadow-pink-500/25" },
-  ]
+  ];
 
   const assessments = {
     phq9: {
@@ -93,7 +95,7 @@ export default function ChatPage() {
         "Over the last 2 weeks, how often have you been bothered by feeling afraid, as if something awful might happen?",
       ],
     },
-  }
+  };
 
   const sendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -102,12 +104,11 @@ export default function ChatPage() {
       sender: "user",
       timestamp: new Date(),
       type: "text",
-    }
+    };
 
-    // --- Updated for remembering full conversation ---
-    const updatedMessages = [...messages, userMessage]
-    setMessages(updatedMessages)
-    setIsLoading(true)
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/chat", {
@@ -120,11 +121,11 @@ export default function ChatPage() {
             content: msg.content,
           })),
         }),
-      })
+      });
 
-      if (!response.ok) throw new Error("Failed to get response")
+      if (!response.ok) throw new Error("Failed to get response");
 
-      const data = await response.json()
+      const data = await response.json();
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -132,16 +133,16 @@ export default function ChatPage() {
         sender: "bot",
         timestamp: new Date(data.timestamp),
         type: "text",
-      }
+      };
 
-      setMessages((prev) => [...prev, botMessage])
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error("Chat API error:", error)
+      console.error("Chat API error:", error);
       toast({
         title: "Connection Error",
         description: "Unable to connect to the chat service. Please try again.",
         variant: "destructive",
-      })
+      });
 
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -149,19 +150,21 @@ export default function ChatPage() {
         sender: "bot",
         timestamp: new Date(),
         type: "text",
-      }
-      setMessages((prev) => [...prev, fallbackMessage])
+      };
+      setMessages((prev) => [...prev, fallbackMessage]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
 
-    setInputValue("")
-  }
+    setInputValue("");
+  };
 
-  const handleQuickAction = (action: string) => { sendMessage(action) }
+  const handleQuickAction = (action: string) => {
+    sendMessage(action);
+  };
 
   const startAssessment = (type: "phq9" | "gad7") => {
-    const assessmentData = assessments[type]
+    const assessmentData = assessments[type];
     setAssessment({
       id: type,
       name: assessmentData.name,
@@ -169,7 +172,7 @@ export default function ChatPage() {
       currentQuestion: 0,
       responses: [],
       isActive: true,
-    })
+    });
 
     const botMessage: Message = {
       id: Date.now().toString(),
@@ -177,20 +180,20 @@ export default function ChatPage() {
       sender: "bot",
       timestamp: new Date(),
       type: "text",
-    }
+    };
 
-    setMessages((prev) => [...prev, botMessage])
-  }
+    setMessages((prev) => [...prev, botMessage]);
+  };
 
   const handleAssessmentResponse = async (score: number) => {
-    if (!assessment) return
-    const newResponses = [...assessment.responses, score]
-    const nextQuestion = assessment.currentQuestion + 1
+    if (!assessment) return;
+    const newResponses = [...assessment.responses, score];
+    const nextQuestion = assessment.currentQuestion + 1;
 
     if (nextQuestion < assessment.questions.length) {
-      setAssessment({ ...assessment, currentQuestion: nextQuestion, responses: newResponses })
+      setAssessment({ ...assessment, currentQuestion: nextQuestion, responses: newResponses });
     } else {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         const response = await fetch("/api/assessments", {
           method: "POST",
@@ -200,24 +203,25 @@ export default function ChatPage() {
             tool: assessment.id === "phq9" ? "PHQ-9" : "GAD-7",
             responses: newResponses,
           }),
-        })
-        if (!response.ok) throw new Error("Failed to save assessment")
-        const data = await response.json()
+        });
+        if (!response.ok) throw new Error("Failed to save assessment");
+        const data = await response.json();
 
         const botMessage: Message = {
           id: Date.now().toString(),
-          content: `${data.message}${data.recommendations?.length > 0 ? "\n\nRecommendations:\n• " + data.recommendations.join("\n• ") : ""
-            }\n\nRemember, this is just a screening tool and not a diagnosis.`,
+          content: `${data.message}${
+            data.recommendations?.length > 0 ? "\n\nRecommendations:\n• " + data.recommendations.join("\n• ") : ""
+          }\n\nRemember, this is just a screening tool and not a diagnosis.`,
           sender: "bot",
           timestamp: new Date(),
           type: "text",
-        }
+        };
 
-        setMessages((prev) => [...prev, botMessage])
+        setMessages((prev) => [...prev, botMessage]);
 
-        const totalScore = newResponses.reduce((a, b) => a + b, 0)
+        const totalScore = newResponses.reduce((a, b) => a + b, 0);
         const shouldShowButtons =
-          (assessment.id === "phq9" && totalScore > 4) || (assessment.id === "gad7" && totalScore > 3)
+          (assessment.id === "phq9" && totalScore > 4) || (assessment.id === "gad7" && totalScore > 3);
 
         if (shouldShowButtons) {
           const buttonMessage: Message = {
@@ -226,43 +230,65 @@ export default function ChatPage() {
             sender: "bot",
             timestamp: new Date(),
             type: "buttons",
-          }
-          setMessages((prev) => [...prev, buttonMessage])
+          };
+          setMessages((prev) => [...prev, buttonMessage]);
         }
 
         toast({
           title: "Assessment Complete",
           description: `Your ${assessment.name} has been completed and saved securely.`,
-        })
+        });
       } catch (error) {
-        console.error("[Assessment API error]:", error)
+        console.error("[Assessment API error]:", error);
         toast({
           title: "Save Error",
           description: "Assessment completed but couldn't be saved. Your responses are still valid.",
           variant: "destructive",
-        })
+        });
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
 
-      setAssessment(null)
+      setAssessment(null);
     }
-  }
+  };
 
-  // --- All other JSX code remains unchanged ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/60 flex flex-col relative">
-      {/* ... everything else stays the same ... */}
+    <div className={`min-h-screen flex flex-col relative transition-all duration-500 ${
+      isDarkMode
+        ? "bg-gradient-to-br from-[#141627] via-[#20223a] to-[#2d2547] text-white"
+        : "bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/60 text-gray-900"
+    }`}>
+      {/* Background glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute top-20 right-10 w-72 h-72 rounded-full blur-3xl animate-pulse ${
+          isDarkMode
+            ? "bg-gradient-to-r from-purple-800/30 to-pink-800/25"
+            : "bg-gradient-to-r from-purple-400/20 to-pink-400/20"
+        }`} />
+        <div className={`absolute bottom-32 left-10 w-96 h-96 rounded-full blur-3xl animate-pulse ${
+          isDarkMode
+            ? "bg-gradient-to-r from-blue-900/25 to-cyan-800/15"
+            : "bg-gradient-to-r from-blue-400/15 to-cyan-400/15"
+        }`} />
+      </div>
+
       <Navigation />
       <main className="flex-1 flex flex-col max-w-7xl mx-auto w-full p-4 gap-8 relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full mb-4">
-            <Bot className="w-8 h-8 text-indigo-600" />
+          <div className={`inline-flex items-center justify-center p-2 rounded-full mb-4 ${
+            isDarkMode 
+              ? "bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-white/20" 
+              : "bg-gradient-to-r from-indigo-500/10 to-purple-500/10"
+          }`}>
+            <Bot className="w-8 h-8 text-indigo-500" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
             AI Mental Health Support
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className={`text-lg max-w-2xl mx-auto leading-relaxed ${
+            isDarkMode ? "text-slate-300" : "text-slate-600"
+          }`}>
             Your compassionate AI companion for mental wellness guidance and professional assessments
           </p>
         </div>
@@ -271,30 +297,48 @@ export default function ChatPage() {
           {/* Enhanced Assessment Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Header Card */}
-            <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b-0">
+            <Card className={`backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden ${
+              isDarkMode 
+                ? "bg-slate-900/80 border-slate-700/30 shadow-indigo-900/20" 
+                : "bg-white/80 shadow-indigo-500/10"
+            }`}>
+              <CardHeader className={`border-b-0 ${
+                isDarkMode 
+                  ? "bg-gradient-to-r from-indigo-900/20 to-purple-900/20" 
+                  : "bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10"
+              }`}>
                 <div className="flex items-center space-x-3 mb-2">
                   <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
                     <Brain className="w-5 h-5 text-white" />
                   </div>
-                  <CardTitle className="text-lg bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <CardTitle className="text-lg bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
                     Quick Assessments
                   </CardTitle>
                 </div>
-                <Badge className="w-fit bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border-0 font-medium">
+                <Badge className={`w-fit border-0 font-medium ${
+                  isDarkMode 
+                    ? "bg-gradient-to-r from-emerald-900/30 to-teal-900/30 text-emerald-300" 
+                    : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700"
+                }`}>
                   <Shield className="w-3 h-3 mr-1" />
                   Completely Private
                 </Badge>
               </CardHeader>
               <CardContent className="p-6">
-                <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                <p className={`text-sm mb-6 leading-relaxed ${
+                  isDarkMode ? "text-slate-300" : "text-slate-600"
+                }`}>
                   Get instant insights with our clinically-validated screening tools
                 </p>
 
-                {/* PHQ-9 Assessment Card - Modern Design */}
+                {/* PHQ-9 Assessment Card */}
                 <div className="relative mb-6 group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition duration-500 animate-pulse"></div>
-                  <Card className="relative bg-gradient-to-br from-white to-purple-50/50 border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl">
+                  <Card className={`relative border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl ${
+                    isDarkMode 
+                      ? "bg-gradient-to-br from-slate-800/90 to-purple-900/30" 
+                      : "bg-gradient-to-br from-white to-purple-50/50"
+                  }`}>
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -302,16 +346,24 @@ export default function ChatPage() {
                             <Activity className="w-6 h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-gray-800">PHQ-9</h3>
-                            <p className="text-sm text-purple-600 font-medium">Depression Screening</p>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>PHQ-9</h3>
+                            <p className="text-sm text-purple-500 font-medium">Depression Screening</p>
                           </div>
                         </div>
-                        <div className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded-full">
+                        <div className={`text-xs font-bold px-2 py-1 rounded-full ${
+                          isDarkMode 
+                            ? "bg-purple-900/30 text-purple-300" 
+                            : "bg-purple-100 text-purple-800"
+                        }`}>
                           9 Questions
                         </div>
                       </div>
                       
-                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      <p className={`text-sm mb-6 leading-relaxed p-4 rounded-2xl border ${
+                        isDarkMode 
+                          ? "text-slate-300 bg-slate-800/60 border-slate-700/50" 
+                          : "text-gray-600 bg-white/60 border-white/50"
+                      }`}>
                         Assess your mood and depressive symptoms over the past two weeks
                       </p>
                       
@@ -328,10 +380,14 @@ export default function ChatPage() {
                   </Card>
                 </div>
 
-                {/* GAD-7 Assessment Card - Modern Design */}
+                {/* GAD-7 Assessment Card */}
                 <div className="relative mb-6 group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition duration-500 animate-pulse"></div>
-                  <Card className="relative bg-gradient-to-br from-white to-blue-50/50 border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl">
+                  <Card className={`relative border-0 shadow-xl rounded-3xl overflow-hidden backdrop-blur-xl ${
+                    isDarkMode 
+                      ? "bg-gradient-to-br from-slate-800/90 to-blue-900/30" 
+                      : "bg-gradient-to-br from-white to-blue-50/50"
+                  }`}>
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -339,16 +395,24 @@ export default function ChatPage() {
                             <Zap className="w-6 h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-gray-800">GAD-7</h3>
-                            <p className="text-sm text-blue-600 font-medium">Anxiety Screening</p>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>GAD-7</h3>
+                            <p className="text-sm text-blue-500 font-medium">Anxiety Screening</p>
                           </div>
                         </div>
-                        <div className="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">
+                        <div className={`text-xs font-bold px-2 py-1 rounded-full ${
+                          isDarkMode 
+                            ? "bg-blue-900/30 text-blue-300" 
+                            : "bg-blue-100 text-blue-800"
+                        }`}>
                           7 Questions
                         </div>
                       </div>
                       
-                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      <p className={`text-sm mb-6 leading-relaxed p-4 rounded-2xl border ${
+                        isDarkMode 
+                          ? "text-slate-300 bg-slate-800/60 border-slate-700/50" 
+                          : "text-gray-600 bg-white/60 border-white/50"
+                      }`}>
                         Evaluate your anxiety levels and worry patterns
                       </p>
                       
@@ -366,14 +430,22 @@ export default function ChatPage() {
                 </div>
 
                 {/* Info Box */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-2xl p-4 backdrop-blur-sm">
+                <div className={`rounded-2xl p-4 backdrop-blur-sm border ${
+                  isDarkMode 
+                    ? "bg-gradient-to-r from-amber-900/20 to-orange-900/20 border-amber-700/30" 
+                    : "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200/50"
+                }`}>
                   <div className="flex items-start space-x-3">
                     <div className="p-1 bg-gradient-to-r from-amber-400 to-orange-400 rounded-lg">
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm text-amber-800 font-semibold mb-1">Professional-Grade Tools</p>
-                      <p className="text-xs text-amber-700 leading-relaxed">
+                      <p className={`text-sm font-semibold mb-1 ${
+                        isDarkMode ? "text-amber-300" : "text-amber-800"
+                      }`}>Professional-Grade Tools</p>
+                      <p className={`text-xs leading-relaxed ${
+                        isDarkMode ? "text-amber-200" : "text-amber-700"
+                      }`}>
                         These assessments are used by healthcare professionals worldwide for accurate mental health screening.
                       </p>
                     </div>
@@ -385,8 +457,16 @@ export default function ChatPage() {
 
           {/* Enhanced Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="flex flex-col bg-white/80 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden h-full">
-              <CardHeader className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b-0">
+            <Card className={`flex flex-col backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden h-full ${
+              isDarkMode 
+                ? "bg-slate-900/80 border-slate-700/30 shadow-indigo-900/20" 
+                : "bg-white/80 shadow-indigo-500/10"
+            }`}>
+              <CardHeader className={`border-b-0 ${
+                isDarkMode 
+                  ? "bg-gradient-to-r from-indigo-900/20 to-purple-900/20" 
+                  : "bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10"
+              }`}>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <Avatar className="w-14 h-14 ring-4 ring-white shadow-lg">
@@ -397,17 +477,25 @@ export default function ChatPage() {
                     <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full border-2 border-white animate-pulse"></div>
                   </div>
                   <div>
-                    <CardTitle className="text-2xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    <CardTitle className="text-2xl bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
                       MindCare AI
                     </CardTitle>
-                    <Badge className="text-sm bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border-0 font-medium mt-1">
+                    <Badge className={`text-sm border-0 font-medium mt-1 ${
+                      isDarkMode 
+                        ? "bg-gradient-to-r from-emerald-900/30 to-teal-900/30 text-emerald-300" 
+                        : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700"
+                    }`}>
                       {isLoading ? "Analyzing..." : "Ready to Help"} • Secure & Private
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="flex-1 flex flex-col p-0 bg-gradient-to-b from-white/50 to-slate-50/30 min-h-0">
+              <CardContent className={`flex-1 flex flex-col p-0 min-h-0 ${
+                isDarkMode 
+                  ? "bg-gradient-to-b from-slate-900/50 to-slate-800/30" 
+                  : "bg-gradient-to-b from-white/50 to-slate-50/30"
+              }`}>
                 <ScrollArea className="flex-1 p-6">
                   <div className="space-y-6">
                     {messages.map((message) => (
@@ -436,6 +524,8 @@ export default function ChatPage() {
                             className={`rounded-3xl p-5 shadow-xl backdrop-blur-sm ${
                               message.sender === "user"
                                 ? "bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+                                : isDarkMode 
+                                ? "bg-slate-800/90 border border-slate-700/50 text-slate-200" 
                                 : "bg-white/90 border border-white/50 text-gray-800"
                             }`}
                           >
@@ -472,7 +562,7 @@ export default function ChatPage() {
 
                             <p
                               className={`text-xs mt-3 ${
-                                message.sender === "user" ? "text-white/70" : "text-gray-500"
+                                message.sender === "user" ? "text-white/70" : isDarkMode ? "text-slate-400" : "text-gray-500"
                               }`}
                             >
                               {message.timestamp.toLocaleTimeString([], {
@@ -493,10 +583,16 @@ export default function ChatPage() {
                               <Bot className="w-5 h-5" />
                             </AvatarFallback>
                           </Avatar>
-                          <div className="rounded-3xl p-5 bg-white/90 backdrop-blur-sm border border-white/50 shadow-xl">
+                          <div className={`rounded-3xl p-5 backdrop-blur-sm shadow-xl border ${
+                            isDarkMode 
+                              ? "bg-slate-800/90 border-slate-700/50" 
+                              : "bg-white/90 border-white/50"
+                          }`}>
                             <div className="flex items-center space-x-3">
                               <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
-                              <p className="text-sm text-gray-600 font-medium">AI is thinking...</p>
+                              <p className={`text-sm font-medium ${
+                                isDarkMode ? "text-slate-300" : "text-gray-600"
+                              }`}>AI is thinking...</p>
                             </div>
                           </div>
                         </div>
@@ -505,21 +601,39 @@ export default function ChatPage() {
 
                     {/* Enhanced Assessment UI */}
                     {assessment && assessment.isActive && (
-                      <div className="bg-gradient-to-br from-white/90 to-indigo-50/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
+                      <div className={`backdrop-blur-xl rounded-3xl p-8 shadow-2xl border ${
+                        isDarkMode 
+                          ? "bg-gradient-to-br from-slate-800/90 to-indigo-900/30 border-slate-700/50" 
+                          : "bg-gradient-to-br from-white/90 to-indigo-50/80 border-white/50"
+                      }`}>
                         <div className="mb-6">
                           <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">{assessment.name}</h3>
-                            <span className="bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 text-sm font-bold px-4 py-2 rounded-full">
+                            <h3 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+                              {assessment.name}
+                            </h3>
+                            <span className={`text-sm font-bold px-4 py-2 rounded-full ${
+                              isDarkMode 
+                                ? "bg-gradient-to-r from-indigo-900/30 to-purple-900/30 text-indigo-300" 
+                                : "bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700"
+                            }`}>
                               Question {assessment.currentQuestion + 1} of {assessment.questions.length}
                             </span>
                           </div>
                           <Progress
                             value={(assessment.currentQuestion / assessment.questions.length) * 100}
-                            className="h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full overflow-hidden"
+                            className={`h-3 rounded-full overflow-hidden ${
+                              isDarkMode 
+                                ? "bg-gradient-to-r from-slate-700 to-slate-600" 
+                                : "bg-gradient-to-r from-gray-200 to-gray-300"
+                            }`}
                           />
                         </div>
 
-                        <p className="text-gray-700 mb-8 leading-relaxed text-base font-medium bg-white/60 p-4 rounded-2xl border border-white/50">
+                        <p className={`mb-8 leading-relaxed text-base font-medium p-4 rounded-2xl border ${
+                          isDarkMode 
+                            ? "text-slate-200 bg-slate-700/60 border-slate-600/50" 
+                            : "text-gray-700 bg-white/60 border-white/50"
+                        }`}>
                           {assessment.questions[assessment.currentQuestion]}
                         </p>
 
@@ -530,7 +644,11 @@ export default function ChatPage() {
                                 key={index}
                                 onClick={() => handleAssessmentResponse(index)}
                                 disabled={isLoading}
-                                className="h-16 p-4 bg-white/80 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-600 text-gray-700 hover:text-white border border-white/50 hover:border-transparent rounded-2xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className={`h-16 p-4 font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none border ${
+                                  isDarkMode 
+                                    ? "bg-slate-700/80 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 text-slate-200 hover:text-white border-slate-600/50 hover:border-transparent" 
+                                    : "bg-white/80 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-600 text-gray-700 hover:text-white border-white/50 hover:border-transparent"
+                                }`}
                               >
                                 {option}
                               </Button>
@@ -544,12 +662,18 @@ export default function ChatPage() {
 
                 {/* Enhanced Input Area */}
                 {!assessment?.isActive && (
-                  <div className="p-6 bg-gradient-to-r from-white/80 to-slate-50/60 backdrop-blur-xl border-t border-white/50">
+                  <div className={`p-6 backdrop-blur-xl border-t ${
+                    isDarkMode 
+                      ? "bg-gradient-to-r from-slate-800/80 to-slate-700/60 border-slate-700/50" 
+                      : "bg-gradient-to-r from-white/80 to-slate-50/60 border-white/50"
+                  }`}>
                     <div className="mb-6">
-                      <p className="text-sm text-gray-600 mb-4 font-medium">Quick conversation starters:</p>
+                      <p className={`text-sm mb-4 font-medium ${
+                        isDarkMode ? "text-slate-300" : "text-gray-600"
+                      }`}>Quick conversation starters:</p>
                       <div className="flex flex-wrap gap-3">
                         {quickActions.map((action, index) => {
-                          const Icon = action.icon
+                          const Icon = action.icon;
                           return (
                             <Button
                               key={index}
@@ -560,7 +684,7 @@ export default function ChatPage() {
                               <Icon className="w-4 h-4 mr-2" />
                               {action.text}
                             </Button>
-                          )
+                          );
                         })}
                       </div>
                     </div>
@@ -573,11 +697,15 @@ export default function ChatPage() {
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && inputValue.trim()) {
-                            sendMessage(inputValue.trim())
+                            sendMessage(inputValue.trim());
                           }
                         }}
                         disabled={isLoading}
-                        className="flex-1 h-14 px-6 bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+                        className={`flex-1 h-14 px-6 backdrop-blur-sm rounded-2xl shadow-lg transition-all duration-300 border ${
+                          isDarkMode 
+                            ? "bg-slate-700/80 border-slate-600/50 text-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent" 
+                            : "bg-white/80 border-white/50 text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
+                        }`}
                       />
                       <Button
                         onClick={() => sendMessage(inputValue.trim())}
@@ -597,5 +725,5 @@ export default function ChatPage() {
 
       <Footer />
     </div>
-  )
+  );
 }

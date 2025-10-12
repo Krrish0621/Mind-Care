@@ -47,26 +47,39 @@ html {
 }
 
 .dark {
-  --background: #1f2937;
-  --foreground: #f9fafb;
-  --card: #374151;
-  --card-foreground: #f9fafb;
-  --popover: #374151;
-  --popover-foreground: #f9fafb;
-  --primary: #8b5cf6;
+  /* Enhanced dark mode colors with better contrast */
+  --background: #0f172a; /* Darker slate background */
+  --foreground: #f1f5f9; /* Lighter foreground for better contrast */
+  --card: #1e293b; /* Slate-800 for cards */
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --primary: #8b5cf6; /* Violet-500 */
   --primary-foreground: #ffffff;
-  --secondary: #f472b6;
-  --secondary-foreground: #1f2937;
-  --muted: #4b5563;
-  --muted-foreground: #9ca3af;
-  /* Replaced blue accent with purple in dark mode */
+  --secondary: #ec4899; /* Pink-500 for better visibility */
+  --secondary-foreground: #ffffff;
+  --muted: #334155; /* Slate-700 */
+  --muted-foreground: #cbd5e1; /* Slate-300 */
   --accent: #8b5cf6;
-  --accent-foreground: #1f2937;
+  --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #4b5563;
-  --input: #374151;
+  --border: #475569; /* Slate-600 */
+  --input: #1e293b;
   --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #ec4899;
+  --chart-3: #06b6d4;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #475569;
+  --sidebar-ring: #8b5cf6;
 }
 
 @theme inline {
@@ -116,10 +129,45 @@ html {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Smooth transitions for all elements */
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
   }
   body {
     @apply bg-background text-foreground font-sans;
   }
+}
+
+/* Enhanced scrollbar styling for both light and dark modes */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--muted);
+}
+
+/* Firefox scrollbar styling */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) var(--muted);
 }
 
 /* Added custom animations and glassmorphism effects */
@@ -168,10 +216,11 @@ html {
     border-color: transparent;
   }
   50% {
-    border-color: #7f56d9;
+    border-color: var(--primary);
   }
 }
 
+/* Enhanced animations with dark mode support */
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out;
 }
@@ -184,18 +233,35 @@ html {
   animation: fadeIn 0.8s ease-out 1s both;
 }
 
+/* Improved gradient backgrounds for both light and dark modes */
 .gradient-bg {
   background: linear-gradient(-45deg, #fdf4ff, #ede9fe, #f3e8ff, #fecaca);
   background-size: 400% 400%;
   animation: gradientShift 8s ease infinite;
 }
 
+.dark .gradient-bg {
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Enhanced glassmorphism with dark mode support */
 .glassmorphism {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
+.dark .glassmorphism {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Enhanced button hover effects */
 .button-hover {
   transition: all 0.3s ease;
 }
@@ -205,6 +271,11 @@ html {
   box-shadow: 0 10px 25px rgba(127, 86, 217, 0.3);
 }
 
+.dark .button-hover:hover {
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+}
+
+/* Enhanced card hover effects */
 .card-hover {
   transition: all 0.3s ease;
 }
@@ -214,10 +285,62 @@ html {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
+.dark .card-hover:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced typewriter effect */
 .typewriter {
   overflow: hidden;
-  border-right: 3px solid #7f56d9;
+  border-right: 3px solid var(--primary);
   white-space: nowrap;
   margin: 0 auto;
   animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+/* Additional dark mode enhancements */
+.dark {
+  color-scheme: dark;
+}
+
+/* Enhanced focus styles for better accessibility */
+.dark *:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Selection styling for both light and dark modes */
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Dark mode image filters for better contrast */
+.dark img:not([src*=".svg"]) {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+/* Enhanced backdrop blur for modals in dark mode */
+.dark .backdrop-blur {
+  backdrop-filter: blur(8px) saturate(180%);
+}
+
+/* Better shadow definitions for dark mode */
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(127, 86, 217, 0.3);
+}
+
+.dark .shadow-glow {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Improved text contrast in dark mode */
+.dark .text-muted {
+  color: var(--muted-foreground);
+}
+
+/* Enhanced border styles for dark mode */
+.dark .border-gradient {
+  border: 1px solid;
+  border-image: linear-gradient(45deg, var(--border), var(--accent)) 1;
 }

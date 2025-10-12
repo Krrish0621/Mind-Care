@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 import "./globals.css"
 import BackgroundMusic from "@/components/background"
+import { DarkModeProvider } from "@/contexts/DarkModeContext"
 
 export const metadata: Metadata = {
   title: "MindCare - Mental Health Support Platform",
@@ -17,13 +18,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
-        <Suspense fallback={null}>
-          <BackgroundMusic />
-          {children}
-          <Toaster />
-        </Suspense>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background text-foreground transition-colors duration-300">
+        <DarkModeProvider>
+          <Suspense fallback={null}>
+            <BackgroundMusic />
+            {children}
+            <Toaster />
+          </Suspense>
+        </DarkModeProvider>
       </body>
     </html>
   )
