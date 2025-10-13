@@ -1,81 +1,66 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface DarkModeContextType {
-  isDarkMode: boolean
-  toggleDarkMode: () => void
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
 }
 
-const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined)
+const DarkModeContext = createContext<DarkModeContextType | null>(null);
 
-export const useDarkMode = () => {
-  const context = useContext(DarkModeContext)
-  if (context === undefined) {
-    throw new Error('useDarkMode must be used within a DarkModeProvider')
+export const useDarkMode = (): DarkModeContextType => {
+  const context = useContext(DarkModeContext);
+  if (!context) {
+    throw new Error("useDarkMode must be used within a DarkModeProvider");
   }
-  return context
-}
+  return context;
+};
 
 interface DarkModeProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  // Load initial theme
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem("darkMode");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    // Detect if dark mode class is already set from hardcoded place:
-    const html = document.documentElement
-    const hardcodedDark = html.classList.contains('dark')
+    const dark =
+      savedTheme === "true" ||
+      (!savedTheme && prefersDark) ||
+      html.classList.contains("dark");
 
-    const savedTheme = localStorage.getItem('darkMode')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    // If hardcoded dark mode is present, prioritize that and sync state
-    if (hardcodedDark) {
-      setIsDarkMode(true)
-      // Do NOT add or remove class, since it's hardcoded and must stay
-    } else {
-      // Otherwise apply dark mode following saved setting or prefers-color-scheme
-      if (savedTheme === 'true' || (!savedTheme && prefersDark)) {
-        setIsDarkMode(true)
-        html.classList.add('dark')
-      } else {
-        setIsDarkMode(false)
-        html.classList.remove('dark')
-      }
-    }
-  }, [])
+    setIsDarkMode(dark);
+    html.classList.toggle("dark", dark);
+  }, []);
 
   const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode
-    setIsDarkMode(newDarkMode)
-    localStorage.setItem('darkMode', newDarkMode.toString())
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      const html = document.documentElement;
 
-    const html = document.documentElement
+      html.classList.toggle("dark", next);
+      localStorage.setItem("darkMode", String(next));
 
-    // Only toggle class if not hardcoded
-    if (!html.classList.contains('dark') || !newDarkMode) {
-      if (newDarkMode) {
-        html.classList.add('dark')
-      } else {
-        html.classList.remove('dark')
-      }
-    }
-  }
+      return next;
+    });
+  };
 
-  // Prevent hydration mismatch
+  // Avoid hydration mismatch
   if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>
+    return <div style={{ visibility: "hidden" }}>{children}</div>;
   }
 
   return (
     <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
       {children}
     </DarkModeContext.Provider>
-  )
-}
+  );
+};

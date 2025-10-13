@@ -1,5 +1,5 @@
 "use client"
-// comment
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
@@ -7,35 +7,91 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { MessageCircle, Calendar, BookOpen, Users, Heart, Shield, Clock, Star, Sparkles, Brain, Zap, Moon, ArrowRight, PlayCircle, CheckCircle } from "lucide-react"
-import { Typewriter } from "react-simple-typewriter"
-import { useDarkMode } from "@/contexts/DarkModeContext"
+import { 
+  MessageCircle, 
+  Calendar, 
+  BookOpen, 
+  Users, 
+  Heart, 
+  Shield, 
+  Clock, 
+  Star, 
+  Sparkles, 
+  Brain, 
+  Zap, 
+  Moon, 
+  ArrowRight, 
+  PlayCircle, 
+  CheckCircle 
+} from "lucide-react"
+import { Typewriter } from 'react-simple-typewriter'
+import { useDarkMode } from '@/contexts/DarkModeContext'
+
+// Loading skeleton component
+function PageSkeleton() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/60 relative overflow-hidden">
+      <div className="animate-pulse">
+        {/* Navigation skeleton */}
+        <div className="h-16 bg-white/80 backdrop-blur-xl border-b border-white/20"></div>
+        
+        {/* Hero section skeleton */}
+        <div className="py-24 px-4">
+          <div className="mx-auto max-w-7xl text-center">
+            <div className="h-8 bg-gray-200 rounded-full w-64 mx-auto mb-6"></div>
+            <div className="h-16 bg-gray-200 rounded-lg w-full max-w-4xl mx-auto mb-6"></div>
+            <div className="h-6 bg-gray-200 rounded w-full max-w-2xl mx-auto mb-8"></div>
+            <div className="flex gap-4 justify-center">
+              <div className="h-14 bg-gray-200 rounded-2xl w-48"></div>
+              <div className="h-14 bg-gray-200 rounded-2xl w-48"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const router = useRouter()
   const [role, setRole] = useState<string | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const { isDarkMode } = useDarkMode()
+  const [mounted, setMounted] = useState(false)
+  
+  // Safe dark mode usage with fallback
+  let isDarkMode = false
+  try {
+    const darkModeHook = useDarkMode()
+    isDarkMode = darkModeHook?.isDarkMode || false
+  } catch (error) {
+    console.log('Dark mode context not available during SSR')
+  }
 
   useEffect(() => {
-    const storedRole = localStorage.getItem("role")
+    setMounted(true)
+    const storedRole = localStorage.getItem('role')
     if (!storedRole) {
-      router.push("/login")
+      router.push('/login')
     } else {
       setRole(storedRole)
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
+    if (!mounted) return
+    
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
-
+    
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+  }, [mounted])
 
-  if (!role) return null
+  // Show loading skeleton during initial mount
+  if (!mounted || !role) {
+    return <PageSkeleton />
+  }
 
   const features = [
     {
@@ -93,7 +149,7 @@ export default function HomePage() {
       buttonColor: "bg-white text-orange-700 hover:bg-orange-100",
       shadowColor: "shadow-orange-500/30",
       buttonText: "Join Community"
-    },
+    }
   ]
 
   const trustFeatures = [
@@ -105,7 +161,7 @@ export default function HomePage() {
     },
     {
       icon: Clock,
-      title: "24/7 Availability", 
+      title: "24/7 Availability",
       description: "Support is always available when you need it, day or night",
       gradient: "from-blue-500 to-indigo-600"
     },
@@ -171,6 +227,7 @@ export default function HomePage() {
                 <Brain className={`w-8 h-8 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
               </div>
             </div>
+
             <div className="absolute top-32 right-24 animate-float-delayed hidden lg:block">
               <div className={`w-12 h-12 ${
                 isDarkMode 
@@ -180,6 +237,7 @@ export default function HomePage() {
                 <Heart className={`w-6 h-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
               </div>
             </div>
+
             <div className="absolute top-40 left-1/3 animate-bounce-slow hidden lg:block">
               <div className={`w-8 h-8 ${
                 isDarkMode 
@@ -200,7 +258,7 @@ export default function HomePage() {
                   Welcome to MindCare
                 </span>
               </div>
-              
+
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[150px] md:min-h-[200px] flex items-center justify-center px-4">
                 <span className={`${
                   isDarkMode 
@@ -209,11 +267,11 @@ export default function HomePage() {
                 } bg-clip-text text-transparent text-center leading-tight transition-all duration-500`}>
                   <Typewriter
                     words={[
-                      "Your Mental Health Journey Starts Here",
-                      "We're Here to Help You Heal",
-                      "Book a Confidential Counseling Session",
-                      "Access Instant AI Support",
-                      "You Are Not Alone – We're With You",
+                      'Your Mental Health Journey Starts Here',
+                      'We\'re Here to Help You Heal',
+                      'Book a Confidential Counseling Session',
+                      'Access Instant AI Support',
+                      'You Are Not Alone - We\'re With You',
                     ]}
                     loop={true}
                     cursor
@@ -229,36 +287,29 @@ export default function HomePage() {
             <p className={`text-lg md:text-xl ${
               isDarkMode ? 'text-slate-300' : 'text-slate-600'
             } mb-10 max-w-3xl mx-auto leading-relaxed px-4 transition-all duration-500`}>
-              Access compassionate AI support, connect with licensed counselors, explore helpful resources, and join a
-              supportive community—all in one safe, confidential platform.
+              Access compassionate AI support, connect with licensed counselors, explore helpful resources, 
+              and join a supportive community—all in one safe, confidential platform.
             </p>
 
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 px-4">
-              <Button
-                asChild
-                size="lg"
-                className={`h-14 md:h-16 px-8 md:px-10 text-lg font-semibold ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600' 
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-                } text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-0`}
-              >
+              <Button asChild size="lg" className={`h-14 md:h-16 px-8 md:px-10 text-lg font-semibold ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600' 
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+              } text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-0`}>
                 <Link href="/chat">
                   <MessageCircle className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
                   Talk to AI Support
                   <ArrowRight className="w-4 md:w-5 h-4 md:h-5 ml-2 md:ml-3" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className={`h-14 md:h-16 px-8 md:px-10 text-lg font-semibold ${
-                  isDarkMode 
-                    ? 'bg-gray-800/80 backdrop-blur-sm border-2 border-indigo-500/50 text-indigo-400 hover:bg-indigo-500 hover:text-white' 
-                    : 'bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white'
-                } rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105`}
-              >
+
+              <Button asChild variant="outline" size="lg" className={`h-14 md:h-16 px-8 md:px-10 text-lg font-semibold ${
+                isDarkMode 
+                  ? 'bg-gray-800/80 backdrop-blur-sm border-2 border-indigo-500/50 text-indigo-400 hover:bg-indigo-500 hover:text-white' 
+                  : 'bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white'
+              } rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105`}>
                 <Link href="/book">
                   <Calendar className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
                   Book a Counselor
@@ -280,6 +331,7 @@ export default function HomePage() {
                   isDarkMode ? 'text-slate-300' : 'text-slate-600'
                 } font-medium text-sm md:text-base transition-all duration-500`}>AI Support Available</div>
               </div>
+
               <div className={`${
                 isDarkMode 
                   ? 'bg-gray-800/60 border-gray-700/50' 
@@ -292,6 +344,7 @@ export default function HomePage() {
                   isDarkMode ? 'text-slate-300' : 'text-slate-600'
                 } font-medium text-sm md:text-base transition-all duration-500`}>Confidential & Secure</div>
               </div>
+
               <div className={`${
                 isDarkMode 
                   ? 'bg-gray-800/60 border-gray-700/50' 
@@ -319,6 +372,7 @@ export default function HomePage() {
               } rounded-full mb-6 transition-all duration-500`}>
                 <PlayCircle className={`w-6 h-6 ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`} />
               </div>
+
               <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-indigo-400 to-purple-400' 
@@ -326,6 +380,7 @@ export default function HomePage() {
               } bg-clip-text text-transparent mb-6 transition-all duration-500`}>
                 Comprehensive Mental Health Support
               </h2>
+
               <p className={`text-lg md:text-xl ${
                 isDarkMode ? 'text-slate-300' : 'text-slate-600'
               } max-w-3xl mx-auto leading-relaxed transition-all duration-500`}>
@@ -352,9 +407,7 @@ export default function HomePage() {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="pt-0 px-6 pb-6">
-                          <Button
-                            className={`w-full h-12 ${feature.buttonColor} font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 pointer-events-none`}
-                          >
+                          <Button className={`w-full h-12 ${feature.buttonColor} font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 pointer-events-none`}>
                             {feature.buttonText}
                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                           </Button>
@@ -379,6 +432,7 @@ export default function HomePage() {
               ? 'bg-gradient-to-r from-indigo-600/10 to-purple-600/10' 
               : 'bg-gradient-to-r from-indigo-500/5 to-purple-500/5'
           } transition-all duration-500`}></div>
+          
           <div className="mx-auto max-w-7xl relative z-10">
             <div className="text-center mb-16 md:mb-20">
               <div className={`inline-flex items-center justify-center p-2 ${
@@ -388,6 +442,7 @@ export default function HomePage() {
               } rounded-full mb-6 transition-all duration-500`}>
                 <Shield className={`w-6 h-6 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
               </div>
+
               <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-emerald-400 to-teal-400' 
@@ -395,6 +450,7 @@ export default function HomePage() {
               } bg-clip-text text-transparent mb-6 transition-all duration-500`}>
                 Your Safety & Privacy Matter
               </h2>
+
               <p className={`text-lg md:text-xl ${
                 isDarkMode ? 'text-slate-300' : 'text-slate-600'
               } max-w-3xl mx-auto leading-relaxed transition-all duration-500`}>
@@ -412,11 +468,15 @@ export default function HomePage() {
                         <Icon className="w-10 h-10 text-white" />
                       </div>
                     </div>
+
                     <h3 className={`text-xl md:text-2xl font-bold ${
-                      isDarkMode ? 'text-gray-100 group-hover:text-indigo-400' : 'text-gray-800 group-hover:text-indigo-600'
+                      isDarkMode 
+                        ? 'text-gray-100 group-hover:text-indigo-400' 
+                        : 'text-gray-800 group-hover:text-indigo-600'
                     } mb-4 transition-colors duration-300`}>
                       {trust.title}
                     </h3>
+
                     <p className={`${
                       isDarkMode ? 'text-gray-300' : 'text-gray-600'
                     } leading-relaxed max-w-sm mx-auto transition-all duration-500`}>
@@ -436,6 +496,7 @@ export default function HomePage() {
               ? 'bg-gradient-to-r from-indigo-700/20 via-purple-700/20 to-pink-700/20' 
               : 'bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-600/10'
           } transition-all duration-500`}></div>
+
           <div className="absolute inset-0">
             <div className={`absolute top-10 left-10 w-32 h-32 ${
               isDarkMode 
@@ -448,7 +509,7 @@ export default function HomePage() {
                 : 'bg-gradient-to-r from-blue-500/10 to-indigo-500/10'
             } rounded-full blur-xl animate-pulse delay-1000 transition-all duration-500`}></div>
           </div>
-          
+
           <div className="mx-auto max-w-5xl text-center relative z-10">
             <div className="relative mb-10">
               <div className={`absolute -inset-4 ${
@@ -464,7 +525,7 @@ export default function HomePage() {
                 <Star className="w-8 md:w-10 h-8 md:h-10 text-white" />
               </div>
             </div>
-            
+
             <blockquote className={`text-2xl md:text-3xl lg:text-4xl font-bold ${
               isDarkMode ? 'text-gray-100' : 'text-gray-800'
             } mb-8 leading-relaxed px-4 transition-all duration-500`}>
@@ -476,7 +537,7 @@ export default function HomePage() {
                 "You are not alone in this journey. Every step forward, no matter how small, is progress worth celebrating."
               </span>
             </blockquote>
-            
+
             <div className="flex items-center justify-center space-x-4 mb-12">
               <div className={`w-12 h-12 ${
                 isDarkMode 
@@ -487,7 +548,9 @@ export default function HomePage() {
               </div>
               <p className={`text-lg ${
                 isDarkMode ? 'text-slate-300' : 'text-slate-600'
-              } font-semibold transition-all duration-500`}>— MindCare Community</p>
+              } font-semibold transition-all duration-500`}>
+                — MindCare Community
+              </p>
             </div>
 
             {/* CTA Section */}
@@ -498,35 +561,32 @@ export default function HomePage() {
             } backdrop-blur-xl rounded-3xl p-6 md:p-8 border shadow-2xl max-w-2xl mx-auto transition-all duration-500`}>
               <h3 className={`text-xl md:text-2xl font-bold ${
                 isDarkMode ? 'text-gray-100' : 'text-gray-800'
-              } mb-4 transition-all duration-500`}>Ready to start your journey?</h3>
+              } mb-4 transition-all duration-500`}>
+                Ready to start your journey?
+              </h3>
               <p className={`${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              } mb-6 transition-all duration-500`}>Take the first step towards better mental health today.</p>
+              } mb-6 transition-all duration-500`}>
+                Take the first step towards better mental health today.
+              </p>
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  asChild
-                  size="lg"
-                  className={`h-12 md:h-14 px-6 md:px-8 ${
-                    isDarkMode 
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600' 
-                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-                  } text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-0`}
-                >
+                <Button asChild size="lg" className={`h-12 md:h-14 px-6 md:px-8 ${
+                  isDarkMode 
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600' 
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                } text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-0`}>
                   <Link href="/chat">
                     <MessageCircle className="w-4 md:w-5 h-4 md:h-5 mr-2" />
                     Start Free Chat
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className={`h-12 md:h-14 px-6 md:px-8 ${
-                    isDarkMode 
-                      ? 'bg-gray-700/90 border-2 border-indigo-500/50 text-indigo-400 hover:bg-indigo-500 hover:text-white' 
-                      : 'bg-white/90 border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white'
-                  } font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105`}
-                >
+
+                <Button asChild variant="outline" size="lg" className={`h-12 md:h-14 px-6 md:px-8 ${
+                  isDarkMode 
+                    ? 'bg-gray-700/90 border-2 border-indigo-500/50 text-indigo-400 hover:bg-indigo-500 hover:text-white' 
+                    : 'bg-white/90 border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white'
+                } font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105`}>
                   <Link href="/resources">
                     <BookOpen className="w-4 md:w-5 h-4 md:h-5 mr-2" />
                     Explore Resources
