@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useDarkMode } from "@/contexts/DarkModeContext"
@@ -260,7 +260,7 @@ const resources: Resource[] = [
   },
   {
     id: "a20",
-    title: "Calming Sounds for Anxiety",
+    title: "Calming Sounds for Anxiety and Stress",
     description: "Audio with calming sounds to reduce anxiety.",
     type: "audio",
     topic: "anxiety",
@@ -328,7 +328,7 @@ const resources: Resource[] = [
   // Hindi guides
   {
     id: "g7",
-    title: "चिंता प्रबंधन की पूरी गाइड",
+    title: "चिंता प्रबंधन की पूरी गाइड और समाधान",
     description: "चिंता प्रबंधन के लिए पूर्ण मार्गदर्शिका।",
     type: "guide",
     topic: "anxiety",
@@ -869,148 +869,151 @@ export default function ResourcesPage() {
         </motion.div>
 
         {/* Popular & Recent Resources */}
-        {!searchQuery && (
-          <div className="mb-12 space-y-8">
-            {/* Popular This Week */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className={`${
-                isDarkMode 
-                  ? 'bg-gray-800/40 border-gray-700/30' 
-                  : 'bg-white/60 border-white/40'
-              } backdrop-blur-xl border transition-all duration-500 shadow-xl`}>
-                <CardHeader>
-                  <CardTitle className={`flex items-center space-x-3 text-xl ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    <TrendingUp className="w-6 h-6 text-orange-500" />
-                    <span>Popular This Week</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex space-x-6 pb-4">
-                      {popularResources.map((resource, index) => {
-                        const Icon = getResourceIcon(resource.type)
-                        return (
-                          <motion.div
-                            key={resource.id}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                          >
-                            <Card 
-                              className={`flex-shrink-0 w-80 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 ${
-                                isDarkMode 
-                                  ? 'bg-gray-800/60 hover:bg-gray-800/80 border-gray-700/40' 
-                                  : 'bg-white/80 hover:bg-white border-gray-200/40'
-                              } backdrop-blur-xl border shadow-lg hover:shadow-2xl`}
-                              onClick={() => handleResourceClick(resource)}
-                            >
-                              <CardContent className="p-6">
-                                <div className="flex items-center space-x-3 mb-4">
-                                  <Icon className="w-6 h-6 text-purple-600" />
-                                  <Badge className={`${getTopicColor(resource.topic)} border font-medium`}>
-                                    {resource.topic.replace("-", " ")}
-                                  </Badge>
-                                </div>
-                                <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${
-                                  isDarkMode ? 'text-white' : 'text-gray-900'
-                                }`}>
-                                  {resource.title}
-                                </h3>
-                                <div className={`flex items-center justify-between text-sm ${
-                                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                  <span className="capitalize font-medium">{resource.language}</span>
-                                  <span>{resource.views.toLocaleString()} views</span>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
-            </motion.div>
+{!searchQuery && (
+  <div className="mb-12 space-y-8">
+    {/* Popular This Week */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+    >
+      <Card className={`${
+        isDarkMode 
+          ? 'bg-gray-800/40 border-gray-700/30' 
+          : 'bg-white/60 border-white/40'
+      } backdrop-blur-xl border transition-all duration-500 shadow-xl`}>
+        <CardHeader>
+          <CardTitle className={`flex items-center space-x-3 text-xl ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>
+            <TrendingUp className="w-6 h-6 text-orange-500" />
+            <span>Popular This Week</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ScrollArea className="w-full">
+            <div className="flex space-x-6 pb-4 pr-6">
+              {popularResources.map((resource, index) => {
+                const Icon = getResourceIcon(resource.type)
+                return (
+                  <motion.div
+                    key={resource.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <Card 
+                      className={`flex-shrink-0 w-80 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 ${
+                        isDarkMode 
+                          ? 'bg-gray-800/60 hover:bg-gray-800/80 border-gray-700/40' 
+                          : 'bg-white/80 hover:bg-white border-gray-200/40'
+                      } backdrop-blur-xl border shadow-lg hover:shadow-2xl`}
+                      onClick={() => handleResourceClick(resource)}
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <Icon className="w-6 h-6 text-purple-600" />
+                          <Badge className={`${getTopicColor(resource.topic)} border font-medium`}>
+                            {resource.topic.replace("-", " ")}
+                          </Badge>
+                        </div>
+                        <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {resource.title}
+                        </h3>
+                        <div className={`flex items-center justify-between text-sm ${
+                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          <span className="capitalize font-medium">{resource.language}</span>
+                          <span>{resource.views.toLocaleString()} views</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </motion.div>
 
-            {/* Recently Viewed */}
-            {recentResources.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <Card className={`${
-                  isDarkMode 
-                    ? 'bg-gray-800/40 border-gray-700/30' 
-                    : 'bg-white/60 border-white/40'
-                } backdrop-blur-xl border transition-all duration-500 shadow-xl`}>
-                  <CardHeader>
-                    <CardTitle className={`flex items-center space-x-3 text-xl ${
-                      isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      <History className="w-6 h-6 text-blue-500" />
-                      <span>Recently Viewed</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="w-full whitespace-nowrap">
-                      <div className="flex space-x-6 pb-4">
-                        {recentResources.map((resource, index) => {
-                          if (!resource) return null
-                          const Icon = getResourceIcon(resource.type)
-                          return (
-                            <motion.div
-                              key={resource.id}
-                              initial={{ opacity: 0, x: 20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.4, delay: index * 0.1 }}
-                            >
-                              <Card 
-                                className={`flex-shrink-0 w-80 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 ${
-                                  isDarkMode 
-                                    ? 'bg-gray-800/60 hover:bg-gray-800/80 border-gray-700/40' 
-                                    : 'bg-white/80 hover:bg-white border-gray-200/40'
-                                } backdrop-blur-xl border shadow-lg hover:shadow-2xl`}
-                                onClick={() => handleResourceClick(resource)}
-                              >
-                                <CardContent className="p-6">
-                                  <div className="flex items-center space-x-3 mb-4">
-                                    <Icon className="w-6 h-6 text-purple-600" />
-                                    <Badge className={`${getTopicColor(resource.topic)} border font-medium`}>
-                                      {resource.topic.replace("-", " ")}
-                                    </Badge>
-                                  </div>
-                                  <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${
-                                    isDarkMode ? 'text-white' : 'text-gray-900'
-                                  }`}>
-                                    {resource.title}
-                                  </h3>
-                                  <div className={`flex items-center justify-between text-sm ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                  }`}>
-                                    <span className="capitalize font-medium">{resource.language}</span>
-                                    <span>{resource.duration}</span>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          )
-                        })}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </div>
-        )}
+    {/* Recently Viewed */}
+    {recentResources.length > 0 && (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <Card className={`${
+          isDarkMode 
+            ? 'bg-gray-800/40 border-gray-700/30' 
+            : 'bg-white/60 border-white/40'
+        } backdrop-blur-xl border transition-all duration-500 shadow-xl`}>
+          <CardHeader>
+            <CardTitle className={`flex items-center space-x-3 text-xl ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              <History className="w-6 h-6 text-blue-500" />
+              <span>Recently Viewed</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="w-full">
+              <div className="flex space-x-6 pb-4 pr-6">
+                {recentResources.map((resource, index) => {
+                  if (!resource) return null
+                  const Icon = getResourceIcon(resource.type)
+                  return (
+                    <motion.div
+                      key={resource.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                    >
+                      <Card 
+                        className={`flex-shrink-0 w-80 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 ${
+                          isDarkMode 
+                            ? 'bg-gray-800/60 hover:bg-gray-800/80 border-gray-700/40' 
+                            : 'bg-white/80 hover:bg-white border-gray-200/40'
+                        } backdrop-blur-xl border shadow-lg hover:shadow-2xl`}
+                        onClick={() => handleResourceClick(resource)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-center space-x-3 mb-4">
+                            <Icon className="w-6 h-6 text-purple-600" />
+                            <Badge className={`${getTopicColor(resource.topic)} border font-medium`}>
+                              {resource.topic.replace("-", " ")}
+                            </Badge>
+                          </div>
+                          <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {resource.title}
+                          </h3>
+                          <div className={`flex items-center justify-between text-sm ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            <span className="capitalize font-medium">{resource.language}</span>
+                            <span>{resource.duration}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )}
+  </div>
+)}
+
 
         {/* Advanced Filters */}
         <motion.div
