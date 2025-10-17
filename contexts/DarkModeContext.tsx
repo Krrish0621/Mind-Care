@@ -25,41 +25,33 @@ export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Load initial theme
+  // This useEffect will only run in the browser, not on the server.
   useEffect(() => {
-    setMounted(true);
-    const html = document.documentElement;
+    setMounted(true); // Now we know we are on the client.
+
     const savedTheme = localStorage.getItem("darkMode");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme = savedTheme ? savedTheme === "true" : prefersDark;
 
-    const dark =
-      savedTheme === "true" ||
-      (!savedTheme && prefersDark) ||
-      html.classList.contains("dark");
-
-    setIsDarkMode(dark);
-    html.classList.toggle("dark", dark);
-  }, []);
+    setIsDarkMode(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme);
+  }, []); // The empty array ensures this runs only once on the client
 
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => {
       const next = !prev;
-      const html = document.documentElement;
-
-      html.classList.toggle("dark", next);
       localStorage.setItem("darkMode", String(next));
-
+      document.documentElement.classList.toggle("dark", next);
       return next;
     });
   };
 
-  // Avoid hydration mismatch
-  if (!mounted) {
-    return <div style={{ visibility: "hidden" }}>{children}</div>;
-  }
+  // On the server, we provide a default (non-crashing) value.
+  // Once mounted on the client, this will update with the real value.
+  const value = mounted ? { isDarkMode, toggleDarkMode } : { isDarkMode: false, toggleDarkMode: () => {} };
 
   return (
-    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <DarkModeContext.Provider value={value}>
       {children}
     </DarkModeContext.Provider>
   );
