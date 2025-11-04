@@ -10,7 +10,7 @@ const generateMeetLink = () => {
   }).join("");
   return `https://meet.google.com/${code.slice(0,3)}-${code.slice(4,8)}-${code.slice(9)}`;
 };
-
+//
 export async function POST(request: NextRequest) {
   try {
     const { student_token, counsellor_id, date, time, mode } = await request.json();
